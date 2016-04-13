@@ -1,0 +1,270 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+	<meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, width=device-width, target-densityDpi=device-dpi">	
+	<title>Geocache Drawing on Korean Maps Test</title>
+	<style>
+		html, body {width: 100%; height: 100%}
+		#gmap, #dmap, #nmap {width: 100%; height: 100%; position:fixed; top:0px; right:0px;}
+		body {margin-top: 0px; margin-right: 0px; margin-left: 0px; margin-bottom: 0px}
+		#openclose {position:absolute; width:300px; height:50px; background-color:DarkSlateGray; opacity:0.9; text-align:center; z-index:5; color:white}
+		#controlbar {position:absolute; top:50px; width:300px; background-color:GhostWhite ; opacity:0.9; text-align:center; z-index:5}
+		#google, #naver {background-color:LightGray}
+		#daum {background-color:SkyBlue}
+		.container {
+			margin: 0 auto;
+		}
+		.progress_outer {
+			border: 1px solid #000;
+		}
+		.progress {
+			width: 20%;
+			background: #DEDEDE;
+			height: 5px;  
+		}
+	</style>
+
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+	<script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyDWD5FJS8TRIDCm5SBVm0kmZDvYMSzkCX8&sensor=true&language=ko"></script>
+	<script src="http://apis.daum.net/maps/maps3.js?apikey=51be7544ddaae5029722dff608d61ba756df9d5f"></script>
+	<script src="http://openapi.map.naver.com/openapi/naverMap.naver?ver=2.0&key=ea6351105e3155595038e7f5d019436a"></script>
+
+	<script src="geocachegpx.js"></script>
+	<script>
+		$(document).ready(function() {
+			$('#nmap').hide();
+			$('#gmap').hide();
+			var geocaches = new GPXMap("bluesky61"); // initialize Maps
+			// draw maps
+
+			var readGPXFile = function(geocaches, GPXOwner) {
+				var userDir = ".//user//" + GPXOwner + "//geocaches.gpx";
+
+				$.ajax({
+					type: "GET", 
+					url: userDir,
+					dataType: "xml",
+					cache: false,
+					success: function(data) {
+						geocaches.parseGPX(data);
+						geocaches.centerAndZoom();
+						geocaches.createMarker();           // Add the geocaches
+						setTimeout(
+							geocaches.regisiterDBoundsEvent(), 2000
+						);
+					},
+					error: function (xhr, ajaxOptions, thrownError) {
+					alert(xhr.statusText);
+					alert(xhr.responseText);
+					alert(xhr.status);
+					alert(thrownError);
+				}
+				});
+			}
+
+			var changeMap = function(service){
+				geocaches.cMap = service;
+
+				$('#dmap').hide();
+				$('#nmap').hide();
+				$('#gmap').hide();
+				$('#google').css("background-color", "LightGray");
+				$('#naver').css("background-color", "LightGray");
+				$('#daum').css("background-color", "LightGray");
+
+				if (service == "daum") 
+				{	
+					$('#dmap').show();
+					$('#daum').css("background-color", "SkyBlue ");
+					geocaches.regisiterDBoundsEvent();
+				} else if (service == 'naver')
+				{
+					$('#nmap').show();
+					$('#naver').css("background-color", "SkyBlue ");
+					geocaches.regisiterNBoundsEvent();
+				} else 
+				{
+					$('#gmap').show();
+					$('#google').css("background-color", "SkyBlue ");
+					geocaches.regisiterGBoundsEvent();
+				}
+			};
+
+			/* 로그인 체크 및 파일 불러오기 */
+			var guestIdPw = [
+				{"gcId":"guest", "gcPw":"1234"},
+				{"gcId":"test", "gcPw":"1234"},
+				{"gcId":"bluesky61", "gcPw":"bluesky61" },
+				{"gcId":"hkbaik", "gcPw" : "hkbaik" },
+				{"gcId":"generalred", "gcPw" : "generalred" },
+				{"gcId":"Winny Lee", "gcPw" : "Winny Lee" },
+				{"gcId":"ttettu", "gcPw" : "ttettu1234" },
+				{"gcId":"hl1shy", "gcPw" : "hl1shy1234" },
+				{"gcId":"suk8a", "gcPw" : "4457" },
+				{"gcId":"K-one", "gcPw" : "kyh7935" },
+				{"gcId":"Jiho Kim", "gcPw" : "Jiho" },
+				{"gcId":"bluejay99", "gcPw" : "3650geo" },
+				{"gcId":"YEHA", "gcPw" : "YEHA" }
+			];		
+
+			var checkLogin = function(){
+				var _idUser = document.getElementById("userid").value;
+				var _pwUser = document.getElementById("pwd").value;
+
+				var found=-1;
+				for (var i=0;i<guestIdPw.length ;i++ )
+				{
+					if(_idUser == guestIdPw[i].gcId && _pwUser == guestIdPw[i].gcPw ){
+						found=i; break;
+					}
+				}
+				if (found ==-1){
+					alert("No such ID");
+				}else{  // Login Successful
+					
+					changeMap("daum");
+					$('#dmap').detach(); 
+					$('#nmap').detach(); 
+					$('#gmap').detach(); 
+					$('body').append('<div id="nmap">');
+					$('body').append('<div id="gmap">');
+					$('body').append('<div id="dmap">');
+					
+					geocaches = new GPXMap(_idUser); // initialize Maps
+					readGPXFile(geocaches, _idUser);
+				}
+			}
+
+
+/* 여기서부터는 파일 올리기 */
+			var _submit = document.getElementById('_submit'); 
+			var _file = document.getElementById('_file');
+			var _progress = document.getElementById('_progress');
+
+			function upload(){
+				if(_file.files.length === 0){
+				return;
+				}
+
+				var _idUser = document.getElementById("userid").value;
+				var data = new FormData();
+				data.append('SelectedFile', _file.files[0]);
+				data.append('userid', _idUser);
+
+				var request = new XMLHttpRequest();
+				request.onreadystatechange = function(){
+					if(request.readyState == 4){
+						try {
+							var resp = JSON.parse(request.response);
+						} catch (e){
+							var resp = {
+								status: 'error',
+								data: 'Unknown error occurred: [' + request.responseText + ']'
+							};
+						}
+						console.log(resp.status + ': ' + resp.data);
+						_progress.style.width = "20%";
+						
+						if(request.status == 200) {
+							changeMap("daum");
+							$('#dmap').detach(); 
+							$('#nmap').detach(); 
+							$('#gmap').detach(); 
+							$('body').append('<div id="dmap">');
+							$('body').append('<div id="nmap">');
+							$('body').append('<div id="gmap">');
+					
+							geocaches = new GPXMap(_idUser); // initialize Maps
+							readGPXFile(geocaches, _idUser);
+						}
+					}
+				};
+
+				request.upload.addEventListener('progress', function(e){
+					_progress.style.width = Math.ceil(e.loaded/e.total) * 100 + '%';
+				}, false);
+
+				request.open('POST', 'upload_gpx.php');
+				request.send(data);
+			}
+
+			_submit.addEventListener('click', upload);		
+			
+/* 현재 위치로 이동하기 */
+			var currentLocation = function(pos){
+				if (!navigator.geolocation) throw "위치정보가 지원되지 않습니다!";
+				
+				var cLat = pos.coords.latitude;
+				var cLon = pos.coords.longitude;
+
+				if(geocaches.cMap == "google")
+					geocaches.gMap.setCenter(new google.maps.LatLng(cLat, cLon));
+				else if(geocaches.cMap == "daum")
+					geocaches.dMap.setCenter(new daum.maps.LatLng(cLat, cLon));
+				else
+					geocaches.nMap.setCenter(new nhn.api.map.LatLng(cLat, cLon));
+				
+			}
+			
+			
+/* 여기서부터는 화면 제어 */					
+			$("#openclose").click(function(){$("#controlbar").slideToggle();});
+
+			$("#google").click( function(){changeMap("google")});
+			$("#daum").click( function(){changeMap("daum")});
+			$("#naver").click( function(){changeMap("naver")});
+
+			$("#login").click( function(){checkLogin()});
+			$("#curPos").click(function(){navigator.geolocation.getCurrentPosition(currentLocation)});
+			
+		});
+	</script>
+	</head>
+<body>
+	<div id="openclose">콘트롤 여닫기</div>
+	<div id="controlbar">
+		<p></p>
+		<form>
+			<fieldset>
+			<legend>지도 선택</legend>
+				<button type="button" id="google" >Google</button>
+				<button type="button" id="daum"   >Daum</button>
+				<button type="button" id="naver"  >Naver</button>
+			</fieldset>
+		</form>
+
+		<p></p>
+		<form>
+			<fieldset>
+				<legend>GPX 파일 불러오기</legend>
+					지오캐싱 ID : <input type="text" id="userid" ><br>
+					패스워드 &nbsp;&nbsp;&nbsp;&nbsp;: <input type="password" id="pwd"><br><br>
+					<input type="button" id="login" value="접속하기">
+					<div class='container'>
+						<hr>
+						<input type='file' id='_file'> 
+						<hr>
+						<input type='button' id='_submit' value='올리기!'>
+						
+						<div class='progress_outer'>
+							<div id='_progress' class='progress'></div>
+						</div>
+					</div>
+			</fieldset>
+		</form>
+
+		<p></p>
+		<form>
+			<fieldset>
+				<legend>현재위치 찾아가기</legend>
+				<button type="button" id="curPos" >현재위치로</button> 
+			</fieldset>
+		</form>
+		<p></p>
+	</div>
+	<div id="dmap"></div>
+	<div id="gmap"></div>
+	<div id="nmap"></div>
+</body>
+</html>
+
