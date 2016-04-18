@@ -2,7 +2,7 @@
 <html>
 	<head>
 	<meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, width=device-width, target-densityDpi=device-dpi">	
-	<title>Geocache Drawing on Korean Maps Test</title>
+	<title>Draw Geocaches on Korean Maps</title>
 	<style>
 		html, body {width: 100%; height: 100%}
 		#gmap, #dmap, #nmap {width: 100%; height: 100%; position:fixed; top:0px; right:0px;}
@@ -36,8 +36,11 @@
 			$('#gmap').hide();
 			var geocaches = new GPXMap("bluesky61"); // initialize Maps
 			// draw maps
-
+			// Geocaches 와 kMap을 분리해야 함.
+			
 			var readGPXFile = function(geocaches, GPXOwner) {
+				// Geocaches의 Method로 만들어야 함
+
 				var userDir = ".//user//" + GPXOwner + "//geocaches.gpx";
 
 				$.ajax({
@@ -54,15 +57,17 @@
 						);
 					},
 					error: function (xhr, ajaxOptions, thrownError) {
-					alert(xhr.statusText);
-					alert(xhr.responseText);
-					alert(xhr.status);
-					alert(thrownError);
-				}
+						alert(xhr.statusText);
+						alert(xhr.responseText);
+						alert(xhr.status);
+						alert(thrownError);
+					}
 				});
 			}
 
 			var changeMap = function(service){
+			// kMap의 Method로 만들어야 함
+
 				geocaches.cMap = service;
 
 				$('#dmap').hide();
@@ -91,6 +96,9 @@
 			};
 
 			/* 로그인 체크 및 파일 불러오기 */
+			// 이부분은 User 클래스로 독립하여 관리
+			// 모두 DB로 저장하는 방법을 강구할 것
+
 			var guestIdPw = [
 				{"gcId":"guest", "gcPw":"1234"},
 				{"gcId":"test", "gcPw":"1234"},
@@ -108,6 +116,7 @@
 			];		
 
 			var checkLogin = function(){
+				// callback function으로 별도 파일 분리
 				var _idUser = document.getElementById("userid").value;
 				var _pwUser = document.getElementById("pwd").value;
 
@@ -137,11 +146,13 @@
 
 
 /* 여기서부터는 파일 올리기 */
+			// callback function으로 별도 파일 분리
+
 			var _submit = document.getElementById('_submit'); 
 			var _file = document.getElementById('_file');
 			var _progress = document.getElementById('_progress');
 
-			function upload(){
+			var upload = function(){
 				if(_file.files.length === 0){
 				return;
 				}
@@ -192,6 +203,8 @@
 			
 /* 현재 위치로 이동하기 */
 			var currentLocation = function(pos){
+ 			// callback function으로 별도 파일 분리
+
 				if (!navigator.geolocation) throw "위치정보가 지원되지 않습니다!";
 				
 				var cLat = pos.coords.latitude;
@@ -216,7 +229,7 @@
 
 			$("#login").click( function(){checkLogin()});
 			$("#curPos").click(function(){navigator.geolocation.getCurrentPosition(currentLocation)});
-			
+				
 		});
 	</script>
 	</head>

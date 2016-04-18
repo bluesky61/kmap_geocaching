@@ -15,3 +15,23 @@ The gpx files should contain geocaches, made by geocaching pocket query or GDSK.
 At first, make personal directories, and then upload gpx files. (max 20 Mb)
 That's all. Just move around and the geocaches will appear onto the map.
 You can change maps using the buttons in the menu.
+
+##Functions, Classes##
+=== kmap_geocaching.html
+readGPXFile() : GPX file parsing... should be moved to Geocaches.
+changeMap() : should be moved to koMap and make new callback function
+upload() : callback function
+currentLocation() : callback function
+
+
+=== geocachegpx.js
+function Geocache(...) : constructor for one geocache 
+Geocache.prototype.makeHTML() : creat HTML string base on the geocache
+
+function GPXMap(var GPXOwner) : initializes map : gMap, dMap and nMap.
+GPXMap.prototype.parseGPX() : creates geocacheDB from GPX XML
+GPXMap.prototype.createMarker() : create markers for whole geocacheDB and add events
+GPXMap.prototype.registerGBoundsEvent() : attache events for changing boundarys for googlemaps
+GPXMap.prototype.registerDBoundsEvent() : attache events for changing boundarys for daum maps
+GPXMap.prototype.registerNBoundsEvent() : attache events for changing boundarys for naver maps
+GPXMap.prototype.centerAndZoom() : 

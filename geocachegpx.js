@@ -1,8 +1,10 @@
 ///////////////////////////////////////////////////////////////////////////////
 // geocachegpx.js
-//
+//    현재는 geocaches와 Map이 함께 들어 있음.
+//    이 두개를 분리해야 함
 ///////////////////////////////////////////////////////////////////////////////
 
+// 아래의 세개의 constant 구조체는 Geocaches 내부로 들어가는 게 좋을 듯함.
 cacheImage={
 	"Traditional":"images/2.gif",
 	"Multi":"images/3.gif",
@@ -69,6 +71,11 @@ Geocache.prototype.makeHTML = function() {
 };
 
 function GPXMap(GPXOwner) {
+// initialize gMap, dMap and nMap
+//	    gMap - google maps
+//     dMap - daum map
+//     nMap - naver map
+// GPXOwner는 빼는 것이 맞음
 
 	this.geocacheDB = null;
 	this.GPXOwner = GPXOwner;
@@ -79,20 +86,20 @@ function GPXMap(GPXOwner) {
 	var gMap = new google.maps.Map(document.getElementById('gmap'), {
 		zoom: 8,
 		mapTypeId: google.maps.MapTypeId.ROADMAP,
-    mapTypeControl: true,
-    mapTypeControlOptions: {
-        style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
-        position: google.maps.ControlPosition.TOP_RIGHT
-    },
-    streetViewControl: true,
-    streetViewControlOptions: {
-        position: google.maps.ControlPosition.RIGHT_TOP
-    },
-    zoomControl: true,
-    zoomControlOptions: {
-        style: google.maps.ZoomControlStyle.LARGE,
-        position: google.maps.ControlPosition.RIGHT_TOP
-    }
+		mapTypeControl: true,
+		mapTypeControlOptions: {
+			style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
+			position: google.maps.ControlPosition.TOP_RIGHT
+		},
+		streetViewControl: true,
+		streetViewControlOptions: {
+			position: google.maps.ControlPosition.RIGHT_TOP
+		},
+		zoomControl: true,
+		zoomControlOptions: {
+			style: google.maps.ZoomControlStyle.LARGE,
+			position: google.maps.ControlPosition.RIGHT_TOP
+		}
 	});
 	this.gMap = gMap;
 
@@ -138,6 +145,8 @@ function GPXMap(GPXOwner) {
 };
 
 GPXMap.prototype.parseGPX = function(xmlDoc) {
+	// parseGPX는 Geocaches로 들어가는 것이 맞음.
+
 	this.geocacheDB = new Array();
 
 	if(xmlDoc) {
@@ -180,6 +189,7 @@ GPXMap.prototype.parseGPX = function(xmlDoc) {
 };
 
 GPXMap.prototype.createMarker = function() {
+	// Geocaches를 인자로 받아서 처리하는 것이 맞음.
 	var gMap = this.gMap;
 	var dMap = this.dMap;
 	var nMap = this.nMap;
@@ -468,7 +478,7 @@ GPXMap.prototype.regisiterNBoundsEvent = function() {
 }
 
 GPXMap.prototype.centerAndZoom = function() {
-
+// 여기도 Geocache를 인자로 받아서 처리해야 함
 	var minlat = 0;	var maxlat = 0;
 	var minlon = 0;	var maxlon = 0;
 
