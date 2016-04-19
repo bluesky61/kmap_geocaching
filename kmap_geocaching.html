@@ -25,113 +25,33 @@
 	</style>
 
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-	<script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyDWD5FJS8TRIDCm5SBVm0kmZDvYMSzkCX8&sensor=true&language=ko"></script>
+	<script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCu6hCCxPHVOi3TnoEcUHNZK-rMUCzXZEQ&language=ko"></script>
 	<script src="http://apis.daum.net/maps/maps3.js?apikey=0bef3f16e12741da64be522723f027ab"></script>
-	<script type="text/javascript" src="http://openapi.map.naver.com/openapi/v2/maps.js?clientId=EUJ8CfA76G8mtqytMhQw"></script>
+	<!-- script src="http://openapi.map.naver.com/openapi/v2/maps.js?clientId=EUJ8CfA76G8mtqytMhQw"></script -->
+	<script src="http://openapi.map.naver.com/openapi/v2/maps.js?clientId=Qtus_QPl_Ff_XimMtIcZ"></script>
 
-	<script src="geocachegpx.js"></script>
+	<script src="geocache.js"></script>
+	<script src="gpxmap.js"></script>
+	<script src="callback_functions.js"></script>
 	<script>
 		$(document).ready(function() {
 			$('#nmap').hide();
 			$('#gmap').hide();
-			var geocaches = new GPXMap("bluesky61"); // initialize Maps
-			// draw maps
-			// Geocaches 와 kMap을 분리해야 함.
-			
-			var readGPXFile = function(geocaches, GPXOwner) {
-				// Geocaches의 Method로 만들어야 함
 
-				var userDir = ".//user//" + GPXOwner + "//geocaches.gpx";
+			var koMap = new GPXMap(); // initialize Maps
+			var geocacheDB = new GeocacheDB();
 
-				$.ajax({
-					type: "GET", 
-					url: userDir,
-					dataType: "xml",
-					cache: false,
-					success: function(data) {
-						geocaches.parseGPX(data);
-						geocaches.centerAndZoom();
-						geocaches.createMarker();           // Add the geocaches
-						setTimeout(
-							geocaches.regisiterDBoundsEvent(), 2000
-						);
-					},
-					error: function (xhr, ajaxOptions, thrownError) {
-						alert(xhr.statusText);
-						alert(xhr.responseText);
-						alert(xhr.status);
-						alert(thrownError);
-					}
-				});
-			}
+			/* 화면 제어 */					
+			$("#openclose").click(function(){$("#controlbar").slideToggle();});
 
-			var changeMap = function(service){
-			// kMap의 Method로 만들어야 함
+			$("#google").click( function(){koMap.changeMap("google")});
+			$("#daum").click( function(){koMap.changeMap("daum")});
+			$("#naver").click( function(){koMap.changeMap("naver")});
 
-				geocaches.cMap = service;
-
-				$('#dmap').hide();
-				$('#nmap').hide();
-				$('#gmap').hide();
-				$('#google').css("background-color", "LightGray");
-				$('#naver').css("background-color", "LightGray");
-				$('#daum').css("background-color", "LightGray");
-
-				if (service == "daum") 
-				{	
-					$('#dmap').show();
-					$('#daum').css("background-color", "SkyBlue ");
-					geocaches.regisiterDBoundsEvent();
-				} else if (service == 'naver')
-				{
-					$('#nmap').show();
-					$('#naver').css("background-color", "SkyBlue ");
-					geocaches.regisiterNBoundsEvent();
-				} else 
-				{
-					$('#gmap').show();
-					$('#google').css("background-color", "SkyBlue ");
-					geocaches.regisiterGBoundsEvent();
-				}
-			};
-
-			/* 로그인 체크 및 파일 불러오기 */
-			// 이부분은 User 클래스로 독립하여 관리
-			// 모두 DB로 저장하는 방법을 강구할 것
-
-			var guestIdPw = [
-				{"gcId":"guest", "gcPw":"1234"},
-				{"gcId":"test", "gcPw":"1234"},
-				{"gcId":"bluesky61", "gcPw":"bluesky61" },
-				{"gcId":"hkbaik", "gcPw" : "hkbaik" },
-				{"gcId":"generalred", "gcPw" : "generalred" },
-				{"gcId":"Winny Lee", "gcPw" : "Winny Lee" },
-				{"gcId":"ttettu", "gcPw" : "ttettu1234" },
-				{"gcId":"hl1shy", "gcPw" : "hl1shy1234" },
-				{"gcId":"suk8a", "gcPw" : "4457" },
-				{"gcId":"K-one", "gcPw" : "kyh7935" },
-				{"gcId":"Jiho Kim", "gcPw" : "Jiho" },
-				{"gcId":"bluejay99", "gcPw" : "3650geo" },
-				{"gcId":"YEHA", "gcPw" : "YEHA" }
-			];		
-
-			var checkLogin = function(){
-				// callback function으로 별도 파일 분리
+			$("#login").click( function(){	
 				var _idUser = document.getElementById("userid").value;
 				var _pwUser = document.getElementById("pwd").value;
-
-				var found=-1;
-				for (var i=0;i<guestIdPw.length ;i++ )
-				{
-					if(_idUser == guestIdPw[i].gcId && _pwUser == guestIdPw[i].gcPw ){
-						found=i; break;
-					}
-				}
-				if (found ==-1){
-					alert("No such ID");
-				}else{  // Login Successful
-					
-					changeMap("daum");
+				if(checkLogin(_idUser, _pwUser) >0) {
 					$('#dmap').detach(); 
 					$('#nmap').detach(); 
 					$('#gmap').detach(); 
@@ -139,95 +59,18 @@
 					$('body').append('<div id="gmap">');
 					$('body').append('<div id="dmap">');
 					
-					geocaches = new GPXMap(_idUser); // initialize Maps
-					readGPXFile(geocaches, _idUser);
-				}
-			}
+					geocacheDB.readGPXFile(_idUser);
+					koMap.centerAndZoom(geocacheDB);
+				}});
 
+			$("#upload").click ( function(){
+				var _submit = document.getElementById('_submit'); 
+				var _file = document.getElementById('_file');
+				var _progress = document.getElementById('_progress');
+				var _idUser = document.getElementById('userid');
 
-/* 여기서부터는 파일 올리기 */
-			// callback function으로 별도 파일 분리
-
-			var _submit = document.getElementById('_submit'); 
-			var _file = document.getElementById('_file');
-			var _progress = document.getElementById('_progress');
-
-			var upload = function(){
-				if(_file.files.length === 0){
-				return;
-				}
-
-				var _idUser = document.getElementById("userid").value;
-				var data = new FormData();
-				data.append('SelectedFile', _file.files[0]);
-				data.append('userid', _idUser);
-
-				var request = new XMLHttpRequest();
-				request.onreadystatechange = function(){
-					if(request.readyState == 4){
-						try {
-							var resp = JSON.parse(request.response);
-						} catch (e){
-							var resp = {
-								status: 'error',
-								data: 'Unknown error occurred: [' + request.responseText + ']'
-							};
-						}
-						console.log(resp.status + ': ' + resp.data);
-						_progress.style.width = "20%";
-						
-						if(request.status == 200) {
-							changeMap("daum");
-							$('#dmap').detach(); 
-							$('#nmap').detach(); 
-							$('#gmap').detach(); 
-							$('body').append('<div id="dmap">');
-							$('body').append('<div id="nmap">');
-							$('body').append('<div id="gmap">');
-					
-							geocaches = new GPXMap(_idUser); // initialize Maps
-							readGPXFile(geocaches, _idUser);
-						}
-					}
-				};
-
-				request.upload.addEventListener('progress', function(e){
-					_progress.style.width = Math.ceil(e.loaded/e.total) * 100 + '%';
-				}, false);
-
-				request.open('POST', 'upload_gpx.php');
-				request.send(data);
-			}
-
-			_submit.addEventListener('click', upload);		
-			
-/* 현재 위치로 이동하기 */
-			var currentLocation = function(pos){
- 			// callback function으로 별도 파일 분리
-
-				if (!navigator.geolocation) throw "위치정보가 지원되지 않습니다!";
-				
-				var cLat = pos.coords.latitude;
-				var cLon = pos.coords.longitude;
-
-				if(geocaches.cMap == "google")
-					geocaches.gMap.setCenter(new google.maps.LatLng(cLat, cLon));
-				else if(geocaches.cMap == "daum")
-					geocaches.dMap.setCenter(new daum.maps.LatLng(cLat, cLon));
-				else
-					geocaches.nMap.setCenter(new nhn.api.map.LatLng(cLat, cLon));
-				
-			}
-			
-			
-/* 여기서부터는 화면 제어 */					
-			$("#openclose").click(function(){$("#controlbar").slideToggle();});
-
-			$("#google").click( function(){changeMap("google")});
-			$("#daum").click( function(){changeMap("daum")});
-			$("#naver").click( function(){changeMap("naver")});
-
-			$("#login").click( function(){checkLogin()});
+				upload(_submit, _file, _progress, _idUser)});
+	
 			$("#curPos").click(function(){navigator.geolocation.getCurrentPosition(currentLocation)});
 				
 		});
