@@ -1,87 +1,18 @@
-///////////////////////////////////////////////////////////////////////////////
-// geocachegpx.js
-//    현재는 geocaches와 Map이 함께 들어 있음.
-//    이 두개를 분리해야 함
-///////////////////////////////////////////////////////////////////////////////
+//----------------------------------
+// gpxmap.js - map object and map controls
+// 
+//		programed by Min Heo (heomin61@gmail.com)
+//			2016-04-19		version 0.1 
+// ---------------------------------
 
-// 아래의 세개의 constant 구조체는 Geocaches 내부로 들어가는 게 좋을 듯함.
-cacheImage={
-	"Traditional":"images/2.gif",
-	"Multi":"images/3.gif",
-	"Virtual":"images/4.gif",
-	"Letterbox":"images/5.gif",
-	"Event":"images/6.gif",
-	"Wherigo":"images/7.gif",
-	"Unknown":"images/8.gif",
-	"Earthcach":"images/9.gif",
-	"Cache":"images/cito.gif",
-	"Found":"images/found.png",
-	"Placed":"images/placed.png"
-};
+function GPXMap() {
+//constructor
+// initialize gMap, dMap, nMap
 
-diffImage={
-	'1'  :"images/stars1.gif",
-	'1.5':"images/stars1_5.gif",
-	'2'  :"images/stars2.gif",
-	'2.5':"images/stars2_5.gif",
-	'3'  :"images/stars3.gif",
-	'3.5':"images/stars3_5.gif",
-	'4'  :"images/stars4.gif",
-	'4.5':"images/stars4_5.gif",
-	'5'  :"images/stars5.gif"
-};
-
-sizeImage={
-	"Micro" :"images/micro.gif",
-	"Small" :"images/small.gif",
-	"Regular" :"images/regular.gif",
-	"Large" :"images/large.gif",
-	"Not chosen" :"images/not_chosen.gif",
-	"Virtual" :"images/virtual.gif",
-	"Other" : "images/other.gif"
-};
-
-function Geocache(lat,lon,gcNumber,gcTitle,gcUrl,gcHidden, gcOwner, gcType, gcSize, gcDiff, gcTerr, gcPlaced, gcFound) {
-	this.lat = lat;
-	this.lon = lon;
-	this.gcNumber = gcNumber;
-	this.gcTitle = gcTitle;
-	this.gcUrl = gcUrl;
-	this.gcOwner = gcOwner;
-	this.gcHidden = gcHidden;
-	this.gcType = gcType;
-	this.gcSize = gcSize;
-	this.gcDiff = gcDiff;
-	this.gcTerr = gcTerr;
-	this.gcPlaced = gcPlaced;
-	this.gcFound = gcFound;
-}
-
-Geocache.prototype.makeHTML = function() {
-	var html = "";
-
-	html += "<div style='font-size: 12px;background-color:#FFFFFF;width:310px'> <table border='0'><tr><td colspan='2'>"
-	html += "<img src=" + cacheImage[this.gcType] + ">";
-	html += "<a href=" + this.gcUrl + " target='_blank'><span><b>" + this.gcTitle + "</b></a></span><span style='float:right'>" + this.gcNumber + "</span><br /></td></tr>";
-	html += "<tr><td width='150'>Created by : " + this.gcOwner + "</td><td width='150'>Hidden : " + this.gcHidden + "</td></tr>";
-	html += "<tr><td>Difficulty : <img src=" + diffImage[this.gcDiff] + "></td><td>Terrain : <img src=" + diffImage[this.gcTerr] + "></td></tr>";
-	html += "<tr><td>Size : <img src=" + sizeImage[this.gcSize] + "></td><td>Type : " + this.gcType + "</td></tr></table></div>";
-
-	return html;
-};
-
-function GPXMap(GPXOwner) {
-// initialize gMap, dMap and nMap
-//	    gMap - google maps
-//     dMap - daum map
-//     nMap - naver map
-// GPXOwner는 빼는 것이 맞음
-
-	this.geocacheDB = null;
-	this.GPXOwner = GPXOwner;
 	this.cMap = "daum";
 	this.gMapListener = this.dMapListener = this.nMapListener = null;
 	this.gInfoWindow = this.dInfoWindow = this.nInfoWindow = null;
+	this.gMap = this.dMap = this.nMap = null;
 
 	var gMap = new google.maps.Map(document.getElementById('gmap'), {
 		zoom: 8,
@@ -144,58 +75,14 @@ function GPXMap(GPXOwner) {
 
 };
 
-GPXMap.prototype.parseGPX = function(xmlDoc) {
-	// parseGPX는 Geocaches로 들어가는 것이 맞음.
 
-	this.geocacheDB = new Array();
-
-	if(xmlDoc) {
-		var waypoints = xmlDoc.documentElement.getElementsByTagName("wpt");
-
-		for(var i = 0; i < waypoints.length; i++) {
-			var point = waypoints[i];
-
-			var lat = parseFloat(point.getAttribute("lat"));
-			var lon = parseFloat(point.getAttribute("lon"));
-		
-			var temp = $(point).find("name")
-			var gcNumber = temp.first().text();
-			var gcTitle = temp.eq(1).text();
-			if (gcNumber[0] != 'G' && gcNumber[1] != 'C') 
-				continue;
-			
-			var gcUrl = $(point).find("url").text();
-			var gcHidden = $(point).find("time").text().slice(0,10); 
-			var gcOwner = $(point).find("owner").text();
-			var gcPlaced = (gcOwner == this.GPXOwner) ? true : false;
-			
-			var temp = $(point).find("sym").text();
-			var gcFound = (temp == "Geocache Found") ? true : false;
-			var gctType  = $(point).find("type").first().text().slice(9);
-			var ind = gctType.indexOf(' ');
-				if(ind == -1) {
-					ind = gctType.indexOf('-');
-				}
-				gcType=gctType.slice(0,ind);
-			var gcSize  = $(point).find("container").text();
-			var gcDiff  = $(point).find("difficulty").text();
-			var gcTerr  = $(point).find("terrain").text();
-
-			var geocache = new Geocache(lat,lon,gcNumber,gcTitle,gcUrl,gcHidden, gcOwner, gcType, gcSize, gcDiff, gcTerr, gcPlaced, gcFound); 
-			
-			this.geocacheDB.push(geocache);
-		}
-	}
-};
-
-GPXMap.prototype.createMarker = function() {
-	// Geocaches를 인자로 받아서 처리하는 것이 맞음.
+GPXMap.prototype.createMarker = function(geocaches) {
 	var gMap = this.gMap;
 	var dMap = this.dMap;
 	var nMap = this.nMap;
-	var gDB = this.geocacheDB;
-	var GPXOwner = this.GPXOwner;
-	var length = this.geocacheDB.length;
+	var gDB = geocaches.geocacheDB;
+	var GPXOwner = geocaches.GPXOwner;
+	var length = geocaches.geocacheDB.length;
 	var gInfoWindow = this.gInfoWindow;
 	var dInfoWindow = this.dInfoWindow;
 	var nInfoWindow = this.nInfoWindow;
@@ -456,54 +343,18 @@ GPXMap.prototype.regisiterNBoundsEvent = function() {
 		var nlevel = nMap.getLevel();
 		gMap.setCenter(new google.maps.LatLng(cenLat, cenLon));
 		var ggbounds = gMap.getBounds();
-/*
-		var nCenter = nMap.getCenter();
-		var cenLat = nCenter.y;
-		var cenLon = nCenter.x;
-		
-		var nLevel = nMap.getLevel();
-		var gLevel = nLevel + 5;
-		var dLevel = 20 - gLevel;
-
-		dMap.setLevel(dLevel);
-		dMap.panTo(new daum.maps.LatLng(cenLat, cenLon));
-
-		gMap.setZoom(gLevel);
-		gMap.setCenter(new google.maps.LatLng(cenLat, cenLon));
-*/
 	}
 
 	this.nMapListener = nMapBoundsChanged;
 	nMap.attach('move', this.nMapListener);
 }
 
-GPXMap.prototype.centerAndZoom = function() {
-// 여기도 Geocache를 인자로 받아서 처리해야 함
-	var minlat = 0;	var maxlat = 0;
-	var minlon = 0;	var maxlon = 0;
+GPXMap.prototype.centerAndZoom = function(geocaches) {
 
-	var geocacheDB = this.geocacheDB;
-
-	// If the min and max are uninitialized then initialize them.
-	if(geocacheDB.length > 1) {
-		minlat = geocacheDB[0].lat;
-		maxlat = geocacheDB[0].lat;
-		minlon = geocacheDB[0].lon;
-		maxlon = geocacheDB[0].lon;
-	} else {
-		alert("There's no waypoints!!");
-		return;
-	}
-
-	for(var i = 1; i < geocacheDB.length; i++) {
-		var lat = geocacheDB[i].lat;
-		var lon = geocacheDB[i].lon;
-
-		if(lon < minlon) minlon = lon;
-		if(lon > maxlon) maxlon = lon;
-		if(lat < minlat) minlat = lat;
-		if(lat > maxlat) maxlat = lat;
-	}
+	var minlat = geocaches.minlat;
+	var maxlat = geocaches.maxlat;
+	var minlon = geocaches.minlon;
+	var maxlon = geocaches.maxlon;
 
 	// Center around the middle of the points
 	var centerlat = (maxlat + minlat) / 2;
@@ -532,3 +383,31 @@ GPXMap.prototype.centerAndZoom = function() {
 
 };
 
+GPXMap.prototype.changeMap = function(service){
+
+	this.cMap = service;
+
+	$('#dmap').hide();
+	$('#nmap').hide();
+	$('#gmap').hide();
+	$('#google').css("background-color", "LightGray");
+	$('#naver').css("background-color", "LightGray");
+	$('#daum').css("background-color", "LightGray");
+
+	if (service == "daum") 
+	{	
+		$('#dmap').show();
+		$('#daum').css("background-color", "SkyBlue ");
+		this.regisiterDBoundsEvent();
+	} else if (service == 'naver')
+	{
+		$('#nmap').show();
+		$('#naver').css("background-color", "SkyBlue ");
+		this.regisiterNBoundsEvent();
+	} else 
+	{
+		$('#gmap').show();
+		$('#google').css("background-color", "SkyBlue ");
+		this.regisiterGBoundsEvent();
+	}
+};
