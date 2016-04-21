@@ -95,6 +95,7 @@ GeocacheDB.prototype.readGPXFile = function(GPXOwner) {
 		url: userDir,
 		dataType: "xml",
 		cache: false,
+		async : false,		// for test
 		success: function(data) {
 			geocaches.parseGPX(data);
 			geocaches.calc_MinMax();

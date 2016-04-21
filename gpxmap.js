@@ -9,13 +9,13 @@ function GPXMap() {
 //constructor
 // initialize gMap, dMap, nMap
 
-	this.cMap = "daum";
 	this.gMapListener = this.dMapListener = this.nMapListener = null;
 	this.gInfoWindow = this.dInfoWindow = this.nInfoWindow = null;
 	this.gMap = this.dMap = this.nMap = null;
 
 	var gMap = new google.maps.Map(document.getElementById('gmap'), {
-		zoom: 8,
+		zoom: 13,
+		center: {lat: 37.56613, lng: 126.97805} , 
 		mapTypeId: google.maps.MapTypeId.ROADMAP,
 		mapTypeControl: true,
 		mapTypeControlOptions: {
@@ -32,21 +32,8 @@ function GPXMap() {
 			position: google.maps.ControlPosition.RIGHT_TOP
 		}
 	});
+	gMap.setZoom(14);
 	this.gMap = gMap;
-
-	// Daum Map
-	var dMap = new daum.maps.Map(document.getElementById('dmap'), {
-		center: new daum.maps.LatLng(37.56613, 126.97805),
-		level: 6,
-		mapTypeId: daum.maps.MapTypeId.ROADMAP
-	});
-
-	var zoomControl = new daum.maps.ZoomControl();
-	dMap.addControl(zoomControl, daum.maps.ControlPosition.RIGHT);
-	var mapTypeControl = new daum.maps.MapTypeControl();
-	dMap.addControl(mapTypeControl, daum.maps.ControlPosition.TOPRIGHT);
-
-	this.dMap = dMap;
 
 	// Naver Map
 	nMap = new nhn.api.map.Map(document.getElementById('nmap') ,{
@@ -73,6 +60,21 @@ function GPXMap() {
 
 	this.nMap = nMap;
 
+	// Daum Map
+	var dMap = new daum.maps.Map(document.getElementById('dmap'), {
+		center: new daum.maps.LatLng(37.56613, 126.97805),
+		level: 6,
+		mapTypeId: daum.maps.MapTypeId.ROADMAP
+	});
+
+	var zoomControl = new daum.maps.ZoomControl();
+	dMap.addControl(zoomControl, daum.maps.ControlPosition.RIGHT);
+	var mapTypeControl = new daum.maps.MapTypeControl();
+	dMap.addControl(mapTypeControl, daum.maps.ControlPosition.TOPRIGHT);
+
+	this.dMap = dMap;
+
+	this.changeMap("google");
 };
 
 
@@ -387,6 +389,13 @@ GPXMap.prototype.changeMap = function(service){
 
 	this.cMap = service;
 
+/*	$('#dmap').detach(); 
+	$('#nmap').detach(); 
+	$('#gmap').detach(); 
+	$('body').append('<div id="nmap">');
+	$('body').append('<div id="gmap">');
+	$('body').append('<div id="dmap">');
+*/
 	$('#dmap').hide();
 	$('#nmap').hide();
 	$('#gmap').hide();

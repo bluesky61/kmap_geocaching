@@ -5,7 +5,7 @@
 	<title>Draw Geocaches on Korean Maps</title>
 	<style>
 		html, body {width: 100%; height: 100%}
-		#gmap, #dmap, #nmap {width: 100%; height: 100%; position:fixed; top:0px; right:0px;}
+		#gmap, #nmap, #dmap {width: 100%; height: 100%; position:fixed; top:0px; right:0px;}
 		body {margin-top: 0px; margin-right: 0px; margin-left: 0px; margin-bottom: 0px}
 		#openclose {position:absolute; width:300px; height:50px; background-color:DarkSlateGray; opacity:0.9; text-align:center; z-index:5; color:white}
 		#controlbar {position:absolute; top:50px; width:300px; background-color:GhostWhite ; opacity:0.9; text-align:center; z-index:5}
@@ -25,7 +25,7 @@
 	</style>
 
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-	<script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCu6hCCxPHVOi3TnoEcUHNZK-rMUCzXZEQ&language=ko"></script>
+	<script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyD6Cw2m6ipHjPsd2HfHx5duc1M7tFls6ZY&language=ko"></script>
 	<script src="http://apis.daum.net/maps/maps3.js?apikey=0bef3f16e12741da64be522723f027ab"></script>
 	<!-- script src="http://openapi.map.naver.com/openapi/v2/maps.js?clientId=EUJ8CfA76G8mtqytMhQw"></script -->
 	<script src="http://openapi.map.naver.com/openapi/v2/maps.js?clientId=Qtus_QPl_Ff_XimMtIcZ"></script>
@@ -35,10 +35,8 @@
 	<script src="callback_functions.js"></script>
 	<script>
 		$(document).ready(function() {
-			$('#nmap').hide();
-			$('#gmap').hide();
-
 			var koMap = new GPXMap(); // initialize Maps
+
 			var geocacheDB = new GeocacheDB();
 
 			/* 화면 제어 */					
@@ -52,14 +50,8 @@
 				var _idUser = document.getElementById("userid").value;
 				var _pwUser = document.getElementById("pwd").value;
 				if(checkLogin(_idUser, _pwUser) >0) {
-					$('#dmap').detach(); 
-					$('#nmap').detach(); 
-					$('#gmap').detach(); 
-					$('body').append('<div id="nmap">');
-					$('body').append('<div id="gmap">');
-					$('body').append('<div id="dmap">');
-					
 					geocacheDB.readGPXFile(_idUser);
+					koMap.changeMap("daum");
 					koMap.centerAndZoom(geocacheDB);
 				}});
 
