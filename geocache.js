@@ -80,7 +80,6 @@ function GeocacheDB(GPXOwner){
 	this.maxlat = 0;
 	this.minlon = 0;
 	this.maxlon = 0;
-
 }
 
 // read-in gpx file.

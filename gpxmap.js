@@ -12,6 +12,8 @@ function GPXMap() {
 	this.gMapListener = this.dMapListener = this.nMapListener = null;
 	this.gInfoWindow = this.dInfoWindow = this.nInfoWindow = null;
 	this.gMap = this.dMap = this.nMap = null;
+	this.gMarker = this.dMarker = this.nMarker = false;  // Is marker object already created?
+	this.cMap = null; //(google, daum, naver)
 
 	var gMap = new google.maps.Map(document.getElementById('gmap'), {
 		zoom: 13,
@@ -77,17 +79,17 @@ function GPXMap() {
 	this.changeMap("google");
 };
 
-
-GPXMap.prototype.createMarker = function(geocaches) {
+GPXMap.prototype.createMarker = function(geocacheDB) {
 	var gMap = this.gMap;
 	var dMap = this.dMap;
 	var nMap = this.nMap;
-	var gDB = geocaches.geocacheDB;
-	var GPXOwner = geocaches.GPXOwner;
-	var length = geocaches.geocacheDB.length;
 	var gInfoWindow = this.gInfoWindow;
 	var dInfoWindow = this.dInfoWindow;
 	var nInfoWindow = this.nInfoWindow;
+
+	var GPXOwner = geocacheDB.GPXOwner;
+	var gDB = geocacheDB.geocacheDB;
+	var length = geocacheDB.geocacheDB.length;
 
 // Google Map
 	function openGHelpWindow(gmarker) {
@@ -304,7 +306,6 @@ GPXMap.prototype.regisiterDBoundsEvent = function() {
 	this.dMapListener = dMapBoundsChanged;
 	daum.maps.event.addListener(dMap, 'bounds_changed', dMapBoundsChanged);
 }
-
 
 GPXMap.prototype.regisiterNBoundsEvent = function() {
 	var dMap = this.dMap;

@@ -51,8 +51,9 @@
 				var _pwUser = document.getElementById("pwd").value;
 				if(checkLogin(_idUser, _pwUser) >0) {
 					geocacheDB.readGPXFile(_idUser);
+					koMap.createMarker(geocacheDB);
 					koMap.changeMap("daum");
-					koMap.centerAndZoom(geocacheDB);
+//					koMap.centerAndZoom(geocacheDB);
 				}});
 
 			$("#upload").click ( function(){
