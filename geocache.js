@@ -94,7 +94,8 @@ GeocacheDB.prototype.readGPXFile = function(GPXOwner) {
 		url: userDir,
 		dataType: "xml",
 		cache: false,
-		async : false,		// for test
+		async: false, // is now deprecated. however, if async be true, then
+		                  // koMap.createMarker(geocacheDB) should be moved into success.
 		success: function(data) {
 			geocaches.parseGPX(data);
 			geocaches.calc_MinMax();
@@ -126,7 +127,7 @@ GeocacheDB.prototype.parseGPX = function(xmlDoc) {
 			var temp = $(point).find("name")
 			var gcNumber = temp.first().text();
 			var gcTitle = temp.eq(1).text();
-			if (gcNumber[0] != 'G' && gcNumber[1] != 'C') 
+			if (!(gcNumber[0] == 'G' && gcNumber[1] == 'C'))
 				continue;
 			
 			var gcUrl = $(point).find("url").text();

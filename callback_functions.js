@@ -87,7 +87,10 @@ var upload = function(_submit, _file, _progress, _idUser){
 				$('body').append('<div id="gmap">');
 		
 				geocaches = new GPXMap(_idUser); // initialize Maps
-				readGPXFile(geocaches, _idUser);
+				geocacheDB.readGPXFile(_idUser);
+				koMap.attachHelpCallback(geocacheDB);
+				koMap.createMarker(geocacheDB);
+				koMap.changeMap("daum");});
 			}
 		}
 	};

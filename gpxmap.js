@@ -9,11 +9,15 @@ function GPXMap() {
 //constructor
 // initialize gMap, dMap, nMap
 
+	this.gMap = this.dMap = this.nMap = null;
+	this.cMap = null; //(google, daum, naver)
+
+	this.gMarkers = [];
+	this.dMarkers = [];
+	this.nMarkers = [];
 	this.gMapListener = this.dMapListener = this.nMapListener = null;
 	this.gInfoWindow = this.dInfoWindow = this.nInfoWindow = null;
-	this.gMap = this.dMap = this.nMap = null;
-	this.gMarker = this.dMarker = this.nMarker = false;  // Is marker object already created?
-	this.cMap = null; //(google, daum, naver)
+	this.makeGHelpCallback = this.makeDHelpCallback = null;
 
 	var gMap = new google.maps.Map(document.getElementById('gmap'), {
 		zoom: 13,
@@ -79,7 +83,7 @@ function GPXMap() {
 	this.changeMap("google");
 };
 
-GPXMap.prototype.createMarker = function(geocacheDB) {
+GPXMap.prototype.attachHelpCallback = function(geocacheDB) {
 	var gMap = this.gMap;
 	var dMap = this.dMap;
 	var nMap = this.nMap;
@@ -87,13 +91,14 @@ GPXMap.prototype.createMarker = function(geocacheDB) {
 	var dInfoWindow = this.dInfoWindow;
 	var nInfoWindow = this.nInfoWindow;
 
-	var GPXOwner = geocacheDB.GPXOwner;
 	var gDB = geocacheDB.geocacheDB;
 	var length = geocacheDB.geocacheDB.length;
 
 // Google Map
 	function openGHelpWindow(gmarker) {
-		var gcNum = gmarker.getTitle();
+		var temp = gmarker.getTitle();
+		var n_pos = temp.search('\n');
+		var gcNum = temp.substr(0, n_pos);
 
 		if(gInfoWindow) gInfoWindow.close();
 
@@ -110,7 +115,7 @@ GPXMap.prototype.createMarker = function(geocacheDB) {
 		gInfoWindow.open(gMap, gmarker);
 	}
 
-	function makeGHelpCallback(gmarker) {
+	this.makeGHelpCallback = function (gmarker) {
 	  return function() {
 		openGHelpWindow(gmarker);
 	  };
@@ -122,7 +127,9 @@ GPXMap.prototype.createMarker = function(geocacheDB) {
 
 // DAUM Map
 	function openDHelpWindow(dmarker) {
-		var gcNum = dmarker.getTitle();
+		var temp = dmarker.getTitle();
+		var n_pos = temp.search('\n');
+		var gcNum = temp.substr(0, n_pos);
 
 		if(dInfoWindow) dInfoWindow.close();
 
@@ -138,7 +145,7 @@ GPXMap.prototype.createMarker = function(geocacheDB) {
 		dInfoWindow.open(dMap, dmarker);
 	}
 
-	function makeDHelpCallback(dmarker) {
+	this.makeDHelpCallback = function(dmarker) {
 	  return function() {
 		openDHelpWindow(dmarker);
 	  };
@@ -150,8 +157,11 @@ GPXMap.prototype.createMarker = function(geocacheDB) {
 
 // Naver Map
 	nMap.attach('click', function(oEvent) {
+
 		try{
-			var gcNum = oEvent.target.getTitle();
+			var temp =  oEvent.target.getTitle();
+			var n_pos = temp.search('\n');
+			var gcNum = temp.substr(0, n_pos);
 		} 
 		finally {
 			if(nInfoWindow) nInfoWindow.setVisible(false);
@@ -173,12 +183,40 @@ GPXMap.prototype.createMarker = function(geocacheDB) {
 		nMap.addOverlay(nInfoWindow); 
 	});
 
+	var oLabel = new nhn.api.map.MarkerLabel();
+	nMap.addOverlay(oLabel);
+
+	nMap.attach('mouseenter', function(oCustomEvent) {
+			var oTarget = oCustomEvent.target;
+			if (oTarget instanceof nhn.api.map.Marker) {
+					var oMarker = oTarget;
+					oLabel.setVisible(true, oMarker); // - 특정 마커를 지정하여 해당 마커의 title을 보여준다.
+			}
+	});
+
+	nMap.attach('mouseleave', function(oCustomEvent) {
+			var oTarget = oCustomEvent.target;
+			if (oTarget instanceof nhn.api.map.Marker) {
+					oLabel.setVisible(false);
+			}
+	});
+
+};
+
+GPXMap.prototype.createMarker = function(geocacheDB) {
+	var gMap = this.gMap;
+	var dMap = this.dMap;
+	var nMap = this.nMap;
+
+	var GPXOwner = geocacheDB.GPXOwner;
+	var gDB = geocacheDB.geocacheDB;
+	var length = geocacheDB.geocacheDB.length;
+
 	for(var i=0; i < length; i++){
 
 		var lat = gDB[i].lat;
 		var lon = gDB[i].lon;
 		var gcIcon = gDB[i].gcType;
-		var html = gDB[i].makeHTML();
 
 		if (GPXOwner !='guest') {
 			if(gDB[i].gcPlaced) gcIcon = "Placed";
@@ -189,11 +227,13 @@ GPXMap.prototype.createMarker = function(geocacheDB) {
 		var gmarker = new google.maps.Marker({
 			position: new google.maps.LatLng(lat,lon),
 			icon: {url:cacheImage[gcIcon]},
-			title : gDB[i].gcNumber,
+			title : gDB[i].gcNumber + '\n' + gDB[i].gcTitle,
 			map: gMap
 		});
 
-		google.maps.event.addListener(gmarker, "click", makeGHelpCallback(gmarker));
+		this.gMarkers.push(gmarker);
+
+		google.maps.event.addListener(gmarker, "click", this.makeGHelpCallback(gmarker));
 
 		// Daum Map
 
@@ -208,10 +248,12 @@ GPXMap.prototype.createMarker = function(geocacheDB) {
 			position: dposition,
 			image: dicon
 		});
-		dmarker.setTitle(gDB[i].gcNumber);
+		dmarker.setTitle(gDB[i].gcNumber + '\n' + gDB[i].gcTitle);
 		dmarker.setMap(dMap);
 
-		daum.maps.event.addListener(dmarker, "click", makeDHelpCallback(dmarker));
+		this.dMarkers.push(dmarker);
+
+		daum.maps.event.addListener(dmarker, "click", this.makeDHelpCallback(dmarker));
 
 		// Naver Map
 		var oSize = new nhn.api.map.Size(16, 16);
@@ -219,12 +261,38 @@ GPXMap.prototype.createMarker = function(geocacheDB) {
 		var nposition = new nhn.api.map.LatLng(lat, lon);
 		var nmarker = new nhn.api.map.Marker(oIcon, {
 			point : nposition,
-			title : gDB[i].gcNumber
+			title : gDB[i].gcNumber + '\n' + gDB[i].gcTitle
 		});
 		nMap.addOverlay(nmarker); 
 		nmarker.setVisible(true);
+
+		this.nMarkers.push(nmarker);
 	}
 };
+
+GPXMap.prototype.removeAllMarkers = function(){
+	var gmarkers = this.gMarkers;
+	var dmarkers = this.dMarkers;
+	var nmarkers = this.nMarkers;
+
+// googlemaps
+	for (var i = 0; i < gmarkers.length; i++) {
+		gmarkers[i].setMap(null);
+	}
+	gmarkers = [];
+
+// daum map
+	for (var i = 0; i < dmarkers.length; i++) {
+		dmarkers[i].setMap(null);
+	}
+	dmarkers = [];
+
+// naver map
+	this.nMap.clearOverlay();
+	nmarkers= [];
+
+	this.nMap.addOverlay();
+}
 
 GPXMap.prototype.regisiterGBoundsEvent = function() {
 	var dMap = this.dMap;
@@ -419,5 +487,5 @@ GPXMap.prototype.changeMap = function(service){
 		$('#gmap').show();
 		$('#google').css("background-color", "SkyBlue ");
 		this.regisiterGBoundsEvent();
-	}
+	} 
 };
