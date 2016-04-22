@@ -290,8 +290,6 @@ GPXMap.prototype.removeAllMarkers = function(){
 // naver map
 	this.nMap.clearOverlay();
 	nmarkers= [];
-
-	this.nMap.addOverlay();
 }
 
 GPXMap.prototype.regisiterGBoundsEvent = function() {

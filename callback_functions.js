@@ -55,11 +55,12 @@ var currentLocation = function(pos){
 }
 
 // File Upload
-var upload = function(_submit, _file, _progress, _idUser){
+var upload = function(koMap, geocacheDB ){
 	if(_file.files.length === 0){
 	return;
 	}
 
+	var _idUser = document.getElementById("userid").value;
 	var data = new FormData();
 	data.append('SelectedFile', _file.files[0]);
 	data.append('userid', _idUser);
@@ -79,18 +80,19 @@ var upload = function(_submit, _file, _progress, _idUser){
 			_progress.style.width = "20%";
 			
 			if(request.status == 200) {
-				$('#dmap').detach(); 
+				koMap.removeAllMarkers();
+/*				$('#dmap').detach(); 
 				$('#nmap').detach(); 
 				$('#gmap').detach(); 
 				$('body').append('<div id="dmap">');
 				$('body').append('<div id="nmap">');
 				$('body').append('<div id="gmap">');
-		
-				geocaches = new GPXMap(_idUser); // initialize Maps
+				geocacheDB = new GPXMap();
+*/		
 				geocacheDB.readGPXFile(_idUser);
 				koMap.attachHelpCallback(geocacheDB);
 				koMap.createMarker(geocacheDB);
-				koMap.changeMap("daum");});
+				koMap.changeMap("daum");
 			}
 		}
 	};

@@ -56,17 +56,11 @@
 					koMap.changeMap("daum");
 				}});
 
-			$("#upload").click ( function(){
-				var _submit = document.getElementById('_submit'); 
-				var _file = document.getElementById('_file');
-				var _progress = document.getElementById('_progress');
-				var _idUser = document.getElementById('userid');
-
-				upload(_submit, _file, _progress, _idUser)});
-	
-			$("#curPos").click(function(){navigator.geolocation.getCurrentPosition(currentLocation)});
-			$("#removeMarkers").click(function(){koMap.removeAllMarkers()});
-				
+			// var _submit = document.getElementById('_submit'); 
+			var _file = document.getElementById('_file');
+			var _progress = document.getElementById('_progress');
+			var _idUser = document.getElementById('userid');
+			$("#_submit").click( function(){upload(koMap, geocacheDB)});
 		});
 	</script>
 	</head>
