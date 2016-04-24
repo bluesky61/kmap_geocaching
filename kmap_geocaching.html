@@ -15,17 +15,12 @@
 		.container {
 			margin: 0 auto;
 		}
-		.progress_outer {
-			border: 1px solid #000;
-		}
-		.progress {
-			width: 20%;
-			background: #DEDEDE;
-			height: 5px;  
-		}
 	</style>
 
-	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+	<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+	<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+
 	<script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyD6Cw2m6ipHjPsd2HfHx5duc1M7tFls6ZY&language=ko"></script>
 	<script src="http://apis.daum.net/maps/maps3.js?apikey=0bef3f16e12741da64be522723f027ab"></script>
 	<!-- script src="http://openapi.map.naver.com/openapi/v2/maps.js?clientId=EUJ8CfA76G8mtqytMhQw"></script -->
@@ -50,17 +45,20 @@
 				var _idUser = document.getElementById("userid").value;
 				var _pwUser = document.getElementById("pwd").value;
 				if(checkLogin(_idUser, _pwUser) >0) {
-					geocacheDB.readGPXFile(_idUser);
-					koMap.attachHelpCallback(geocacheDB);
-					koMap.createMarker(geocacheDB);
-					koMap.changeMap("daum");
+					$("#wdialog").dialog( "open" );
+					window.setTimeout(function(){
+						geocacheDB.readGPXFile(_idUser);
+						koMap.attachHelpCallback(geocacheDB);
+						koMap.createMarker(geocacheDB);
+						koMap.changeMap("daum");
+						$("#wdialog").dialog("close");
+						}, 100);
 				}});
 
-			// var _submit = document.getElementById('_submit'); 
 			var _file = document.getElementById('_file');
-			var _progress = document.getElementById('_progress');
 			var _idUser = document.getElementById('userid');
 			$("#_submit").click( function(){upload(koMap, geocacheDB)});
+			$("#wdialog").dialog({autoOpen: false, });
 		});
 	</script>
 	</head>
@@ -89,10 +87,6 @@
 						<input type='file' id='_file'> 
 						<hr>
 						<input type='button' id='_submit' value='올리기!'>
-						
-						<div class='progress_outer'>
-							<div id='_progress' class='progress'></div>
-						</div>
 					</div>
 			</fieldset>
 		</form>
@@ -102,7 +96,6 @@
 			<fieldset>
 				<legend>현재위치 찾아가기</legend>
 				<button type="button" id="curPos" >현재위치로</button> 
-				<button type="button" id="removeMarkers" >마커삭제</button> 
 			</fieldset>
 		</form>
 		<p></p>
@@ -110,6 +103,7 @@
 	<div id="dmap"></div>
 	<div id="gmap"></div>
 	<div id="nmap"></div>
+	<div id="wdialog" title="Wait"> <p>잠시 기다려주세요...</p> </div>
 </body>
 </html>
 

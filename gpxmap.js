@@ -222,7 +222,20 @@ GPXMap.prototype.createMarker = function(geocacheDB) {
 			if(gDB[i].gcPlaced) gcIcon = "Placed";
 			if(gDB[i].gcFound) gcIcon ="Found";
 		}
-
+/* if(
+!(gcIcon =="Traditional" ||
+gcIcon =="Multi" ||
+gcIcon =="Virtual" ||
+gcIcon =="Letterbox" ||
+gcIcon =="Event" ||
+gcIcon =="Wherigo" ||
+gcIcon =="Unknown" ||
+gcIcon =="Earthcach" ||
+gcIcon =="Cache" ||
+gcIcon =="Found" ||
+gcIcon =="Placed"))
+	break;
+*/
 		// Google Map
 		var gmarker = new google.maps.Marker({
 			position: new google.maps.LatLng(lat,lon),

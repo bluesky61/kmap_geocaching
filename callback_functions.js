@@ -77,29 +77,27 @@ var upload = function(koMap, geocacheDB ){
 				};
 			}
 			console.log(resp.status + ': ' + resp.data);
-			_progress.style.width = "20%";
 			
 			if(request.status == 200) {
-				koMap.removeAllMarkers();
-/*				$('#dmap').detach(); 
-				$('#nmap').detach(); 
-				$('#gmap').detach(); 
-				$('body').append('<div id="dmap">');
-				$('body').append('<div id="nmap">');
-				$('body').append('<div id="gmap">');
-				geocacheDB = new GPXMap();
-*/		
-				geocacheDB.readGPXFile(_idUser);
-				koMap.attachHelpCallback(geocacheDB);
-				koMap.createMarker(geocacheDB);
-				koMap.changeMap("daum");
+/*					$('#dmap').detach(); 
+					$('#nmap').detach(); 
+					$('#gmap').detach(); 
+					$('body').append('<div id="nmap">');
+					$('body').append('<div id="gmap">');
+					$('body').append('<div id="dmap">');
+					koMap = new GPXMap();
+*/
+				$("#wdialog").dialog( "open" );
+				window.setTimeout(function(){
+					koMap.removeAllMarkers(); //If upper side, this should be deleted.
+					geocacheDB.readGPXFile(_idUser);
+					koMap.createMarker(geocacheDB);
+					koMap.changeMap("daum");
+					$("#wdialog").dialog("close");
+					}, 100);
 			}
 		}
 	};
-
-	request.upload.addEventListener('progress', function(e){
-		_progress.style.width = Math.ceil(e.loaded/e.total) * 100 + '%';
-	}, false);
 
 	request.open('POST', 'upload_gpx.php');
 	request.send(data);
