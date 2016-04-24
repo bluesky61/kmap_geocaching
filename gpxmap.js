@@ -311,7 +311,7 @@ GPXMap.prototype.regisiterGBoundsEvent = function() {
 	var gMap = this.gMap;
 
 	if(this.dMapListener)
-		daum.maps.event.removeListener(dMap, 'bounds_changed', this.dMapListener);
+		daum.maps.event.removeListener(dMap, 'idle', this.dMapListener);
 	if(this.nMapListener)
 		nMap.detach('move', this.nMapListener);
 
@@ -338,7 +338,7 @@ GPXMap.prototype.regisiterGBoundsEvent = function() {
 
 	}
 
-	this.gMapListener = google.maps.event.addListener(gMap, 'bounds_changed', gMapBoundsChanged );
+	this.gMapListener = google.maps.event.addListener(gMap, 'idle', gMapBoundsChanged );
 
 }
 
@@ -383,7 +383,7 @@ GPXMap.prototype.regisiterDBoundsEvent = function() {
 	}
 
 	this.dMapListener = dMapBoundsChanged;
-	daum.maps.event.addListener(dMap, 'bounds_changed', dMapBoundsChanged);
+	daum.maps.event.addListener(dMap, 'idle', dMapBoundsChanged);
 }
 
 GPXMap.prototype.regisiterNBoundsEvent = function() {
@@ -394,7 +394,7 @@ GPXMap.prototype.regisiterNBoundsEvent = function() {
 	if(this.gMapListener)
 		google.maps.event.removeListener(this.gMapListener);
 	if(this.dMapListener)
-		daum.maps.event.removeListener(dMap, 'bounds_changed', this.dMapListener);
+		daum.maps.event.removeListener(dMap, 'idle', this.dMapListener);
 
 	var nMapBoundsChanged = function() {
 
@@ -403,8 +403,6 @@ GPXMap.prototype.regisiterNBoundsEvent = function() {
 		var swLat = nMapBound[0].lat();
 		var neLon = nMapBound[1].lng();
 		var neLat = nMapBound[1].lat();
-
-		var cc = nMap.getCenter();
 
 		var cenLat = (neLat + swLat)/2;
 		var cenLon = (neLon + swLon)/2;
