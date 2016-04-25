@@ -76,7 +76,7 @@ var upload = function(koMap, geocacheDB ){
 					data: 'Unknown error occurred: [' + request.responseText + ']'
 				};
 			}
-			console.log(resp.status + ': ' + resp.data);
+//			console.log(resp.status + ': ' + resp.data);
 			
 			if(request.status == 200) {
 /*					$('#dmap').detach(); 

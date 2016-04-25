@@ -10,7 +10,7 @@ function GPXMap() {
 // initialize gMap, dMap, nMap
 
 	this.gMap = this.dMap = this.nMap = null;
-	this.cMap = null; //(google, daum, naver)
+	this.cMap = 'old'; //(google, daum, naver)
 
 	this.gMarkers = [];
 	this.dMarkers = [];
@@ -19,27 +19,6 @@ function GPXMap() {
 	this.gInfoWindow = this.dInfoWindow = this.nInfoWindow = null;
 	this.makeGHelpCallback = this.makeDHelpCallback = null;
 
-	var gMap = new google.maps.Map(document.getElementById('gmap'), {
-		zoom: 13,
-		center: {lat: 37.56613, lng: 126.97805} , 
-		mapTypeId: google.maps.MapTypeId.ROADMAP,
-		mapTypeControl: true,
-		mapTypeControlOptions: {
-			style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
-			position: google.maps.ControlPosition.TOP_RIGHT
-		},
-		streetViewControl: true,
-		streetViewControlOptions: {
-			position: google.maps.ControlPosition.RIGHT_TOP
-		},
-		zoomControl: true,
-		zoomControlOptions: {
-			style: google.maps.ZoomControlStyle.LARGE,
-			position: google.maps.ControlPosition.RIGHT_TOP
-		}
-	});
-	gMap.setZoom(14);
-	this.gMap = gMap;
 
 	// Naver Map
 	nMap = new nhn.api.map.Map(document.getElementById('nmap') ,{
@@ -79,6 +58,28 @@ function GPXMap() {
 	dMap.addControl(mapTypeControl, daum.maps.ControlPosition.TOPRIGHT);
 
 	this.dMap = dMap;
+
+	var gMap = new google.maps.Map(document.getElementById('gmap'), {
+		zoom: 13,
+		center: {lat: 37.56613, lng: 126.97805} , 
+		mapTypeId: google.maps.MapTypeId.ROADMAP,
+		mapTypeControl: true,
+		mapTypeControlOptions: {
+			style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
+			position: google.maps.ControlPosition.TOP_RIGHT
+		},
+		streetViewControl: true,
+		streetViewControlOptions: {
+			position: google.maps.ControlPosition.RIGHT_TOP
+		},
+		zoomControl: true,
+		zoomControlOptions: {
+			style: google.maps.ZoomControlStyle.LARGE,
+			position: google.maps.ControlPosition.RIGHT_TOP
+		}
+	});
+	gMap.setZoom(14);
+	this.gMap = gMap;
 
 	this.changeMap("google");
 };
@@ -305,196 +306,103 @@ GPXMap.prototype.removeAllMarkers = function(){
 	nmarkers= [];
 }
 
-GPXMap.prototype.regisiterGBoundsEvent = function() {
-	var dMap = this.dMap;
-	var nMap = this.nMap;
-	var gMap = this.gMap;
-
-	if(this.dMapListener)
-		daum.maps.event.removeListener(dMap, 'idle', this.dMapListener);
-	if(this.nMapListener)
-		nMap.detach('move', this.nMapListener);
-
-	var gMapBoundsChanged = function() {
-
-		var gMapBounds = gMap.getBounds();
-		var neLL = gMapBounds.getNorthEast();
-		var neLat = neLL.lat();
-		var neLon = neLL.lng();
-
-		var swLL = gMapBounds.getSouthWest();
-		var swLat = swLL.lat();
-		var swLon = swLL.lng();
-
-		var dbounds = new daum.maps.LatLngBounds(
-				new daum.maps.LatLng(swLat, swLon),
-				new daum.maps.LatLng(neLat, neLon));
-		dMap.setBounds(dbounds);
-		dMap.setLevel(dMap.getLevel()-1);
-
-		var minPoint = new nhn.api.map.LatLng(swLat, swLon);
-		var maxPoint = new nhn.api.map.LatLng(neLat, neLon);
-		nMap.setBound([minPoint, maxPoint]);
-
-	}
-
-	this.gMapListener = google.maps.event.addListener(gMap, 'idle', gMapBoundsChanged );
-
-}
-
-GPXMap.prototype.regisiterDBoundsEvent = function() {
-	var dMap = this.dMap;
-	var nMap = this.nMap;
-	var gMap = this.gMap;
-
-	if(this.gMapListener)
-		google.maps.event.removeListener(this.gMapListener);
-	if(this.nMapListener)
-		nMap.detach('move', this.nMapListener);
-
-	var dMapBoundsChanged = function() {
-
-		var dMapBounds = dMap.getBounds();
-		var neLL = dMapBounds.getNorthEast();
-		var neLat = neLL.getLat();
-		var neLon = neLL.getLng();
-
-		var swLL = dMapBounds.getSouthWest();
-		var swLat = swLL.getLat();
-		var swLon = swLL.getLng();
-
-		var cenLat = (neLat + swLat)/2;
-		var cenLon = (neLon + swLon)/2;
-		
-		var gbounds = new google.maps.LatLngBounds(
-				new google.maps.LatLng(swLat, swLon),
-				new google.maps.LatLng(neLat, neLon)
-		);
-
-		gMap.setCenter(new google.maps.LatLng(cenLat, cenLon));
-		gMap.setZoom(20 - dMap.getLevel());
-		var ggbounds = gMap.getBounds();
-
-		var minPoint = new nhn.api.map.LatLng(swLat, swLon);
-		var maxPoint = new nhn.api.map.LatLng(neLat, neLon);
-		nMap.setBound([minPoint, maxPoint]);
-		nMap.setLevel(nMap.getLevel()+1);
-
-	}
-
-	this.dMapListener = dMapBoundsChanged;
-	daum.maps.event.addListener(dMap, 'idle', dMapBoundsChanged);
-}
-
-GPXMap.prototype.regisiterNBoundsEvent = function() {
-	var dMap = this.dMap;
-	var nMap = this.nMap;
-	var gMap = this.gMap;
-
-	if(this.gMapListener)
-		google.maps.event.removeListener(this.gMapListener);
-	if(this.dMapListener)
-		daum.maps.event.removeListener(dMap, 'idle', this.dMapListener);
-
-	var nMapBoundsChanged = function() {
-
-		var nMapBound = nMap.getBound();
-		var swLon = nMapBound[0].lng();
-		var swLat = nMapBound[0].lat();
-		var neLon = nMapBound[1].lng();
-		var neLat = nMapBound[1].lat();
-
-		var cenLat = (neLat + swLat)/2;
-		var cenLon = (neLon + swLon)/2;
-		
-		var dbounds = new daum.maps.LatLngBounds(
-				new daum.maps.LatLng(swLat, swLon),
-				new daum.maps.LatLng(neLat, neLon));
-		dMap.setBounds(dbounds);
-		dMap.setLevel(dMap.getLevel()-1);
-		
-		var gbounds = new google.maps.LatLngBounds(
-				new google.maps.LatLng(swLat, swLon),
-				new google.maps.LatLng(neLat, neLon)
-		);
-
-		gMap.setZoom(nMap.getLevel()+5);
-		var glevel = gMap.getZoom();
-		var nlevel = nMap.getLevel();
-		gMap.setCenter(new google.maps.LatLng(cenLat, cenLon));
-		var ggbounds = gMap.getBounds();
-	}
-
-	this.nMapListener = nMapBoundsChanged;
-	nMap.attach('move', this.nMapListener);
-}
-
-GPXMap.prototype.centerAndZoom = function(geocaches) {
-
-	var minlat = geocaches.minlat;
-	var maxlat = geocaches.maxlat;
-	var minlon = geocaches.minlon;
-	var maxlon = geocaches.maxlon;
-
-	// Center around the middle of the points
-	var centerlat = (maxlat + minlat) / 2;
-	var centerlon = (maxlon + minlon) / 2;
-
-	var bounds = new google.maps.LatLngBounds(
-			new google.maps.LatLng(minlat, minlon),
-			new google.maps.LatLng(maxlat, maxlon));
-	// this.gMap.setCenter(new google.maps.LatLng(centerlat, centerlon));
-	this.gMap.fitBounds(bounds);
-
-	// Daum Map
-	var dbounds = new daum.maps.LatLngBounds(
-			new daum.maps.LatLng(minlat, minlon),
-			new daum.maps.LatLng(maxlat, maxlon));
-	// this.dMap.setCenter(new daum.maps.LatLng(centerlon, centerlat));
-	this.dMap.setBounds(dbounds);
-
-	// Naver Map
-	// var centerPoint = new nhn.api.map.LatLng(centerlat, centerlon);
-	// this.nMap.setCenter(centerPoint);
-
-	var minPoint = new nhn.api.map.LatLng(minlat, minlon);
-	var maxPoint = new nhn.api.map.LatLng(maxlat, maxlon);
-	this.nMap.setBound([minPoint, maxPoint]);
-
-};
-
 GPXMap.prototype.changeMap = function(service){
 
+	var oldservice = this.cMap;
 	this.cMap = service;
+	var nMap = this.nMap;
+	var dMap = this.dMap;
+	var gMap = this.gMap;
 
-/*	$('#dmap').detach(); 
-	$('#nmap').detach(); 
-	$('#gmap').detach(); 
-	$('body').append('<div id="nmap">');
-	$('body').append('<div id="gmap">');
-	$('body').append('<div id="dmap">');
-*/
-	$('#dmap').hide();
-	$('#nmap').hide();
-	$('#gmap').hide();
-	$('#google').css("background-color", "LightGray");
-	$('#naver').css("background-color", "LightGray");
-	$('#daum').css("background-color", "LightGray");
+	var cenPoint;
+	var cenX = cenY = 0;
+
+	var oldLevel, newLevel;
+
+	if(oldservice == 'old') {
+		$('#dmap').hide();
+		$('#nmap').hide();
+		$('#gmap').show();
+		$('#google').css("background-color", "SkyBlue ");
+
+		return;
+	}
+
+	if (oldservice == service){
+		return;
+	}
+
+	if (oldservice == 'daum') {
+		cenPoint = dMap.getCenter();
+		cenY = cenPoint.getLat();
+		cenX = cenPoint.getLng();
+
+		oldLevel = dMap.getLevel();
+
+		$('#dmap').hide();
+		$('#daum').css("background-color", "LightGray");
+	} else if(oldservice == 'naver') {
+		cenPoint = nMap.getCenter();
+		cenY = cenPoint.getY();
+		cenX = cenPoint.getX();
+
+		oldLevel = nMap.getLevel();
+		$('#nmap').hide();
+		$('#naver').css("background-color", "LightGray");
+	} else if(oldservice == 'google') {
+		cenPoint = gMap.getCenter();
+		cenY = cenPoint.lat();
+		cenX = cenPoint.lng();
+
+		oldLevel = gMap.getZoom();
+		$('#gmap').hide();
+		$('#google').css("background-color", "LightGray");
+	}
 
 	if (service == "daum") 
 	{	
+		if(oldservice =='google')
+			newLevel = 20 -oldLevel;
+		else if (oldservice == 'naver')
+			newLevel = 15 - oldLevel;
+		if (newLevel >14) newLevel = 14;
+		if (newLevel <1) newLevel =1;
+		dMap.setLevel(newLevel);
+
+		dMap.setCenter(new daum.maps.LatLng(cenY, cenX));
+
 		$('#dmap').show();
 		$('#daum').css("background-color", "SkyBlue ");
-		this.regisiterDBoundsEvent();
 	} else if (service == 'naver')
 	{
+		if(oldservice =='google')
+			newLevel = oldLevel - 5;
+		else if (oldservice == 'daum')
+			newLevel = 15 - oldLevel;
+
+		if (newLevel >14) newLevel = 14;
+		if (newLevel <1) newLevel =1;
+		nMap.setLevel(newLevel);
+
+		nMap.setCenter(new nhn.api.map.LatLng(cenY, cenX));
+
 		$('#nmap').show();
 		$('#naver').css("background-color", "SkyBlue ");
-		this.regisiterNBoundsEvent();
-	} else 
+	} else //google
 	{
+		if(oldservice =='naver')
+			newLevel = oldLevel + 5;
+		else if (oldservice == 'daum')
+			newLevel =  20 - oldLevel;
+
+		if (newLevel >19) newLevel = 19;
+		if (newLevel <6) newLevel =6;
+
+		gMap.setZoom(newLevel);
+
+		gMap.setCenter(new google.maps.LatLng(cenY, cenX));
+
 		$('#gmap').show();
 		$('#google').css("background-color", "SkyBlue ");
-		this.regisiterGBoundsEvent();
 	} 
 };
