@@ -12,12 +12,11 @@ var guestIdPw = [
 	{"gcId":"hkbaik", "gcPw" : "hkbaik" },
 	{"gcId":"generalred", "gcPw" : "generalred" },
 	{"gcId":"Winny Lee", "gcPw" : "Winny Lee" },
-	{"gcId":"ttettu", "gcPw" : "ttettu1234" },
-	{"gcId":"hl1shy", "gcPw" : "hl1shy1234" },
-	{"gcId":"suk8a", "gcPw" : "4457" },
-	{"gcId":"K-one", "gcPw" : "kyh7935" },
-	{"gcId":"Jiho Kim", "gcPw" : "Jiho" },
-	{"gcId":"bluejay99", "gcPw" : "3650geo" },
+	{"gcId":"ttettu", "gcPw" : "ttettu" },
+	{"gcId":"hl1shy", "gcPw" : "hl1shy" },
+	{"gcId":"suk8a", "gcPw" : "suk8a" },
+	{"gcId":"K-one", "gcPw" : "K-one" },
+	{"gcId":"bluejay99", "gcPw" : "bluejay99" },
 	{"gcId":"YEHA", "gcPw" : "YEHA" }
 ];		
 

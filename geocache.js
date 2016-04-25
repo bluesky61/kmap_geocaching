@@ -76,6 +76,10 @@ Geocache.prototype.makeHTML = function() {
 function GeocacheDB(){
 	this.geocacheDB = new Array();
 	this.GPXOwner = null;
+	this.minlat = 0;
+	this.maxlat = 0;
+	this.minlon = 0;
+	this.maxlon = 0;
 }
 
 // read-in gpx file.
@@ -146,5 +150,41 @@ GeocacheDB.prototype.parseGPX = function(xmlDoc) {
 			
 			this.geocacheDB.push(geocache);
 		}
+		this.calc_MinMax();
 	}
 };
+
+// calculate boundary
+GeocacheDB.prototype.calc_MinMax = function() {
+// 
+	var minlat = 0;	var maxlat = 0;
+	var minlon = 0;	var maxlon = 0;
+
+	var geocacheDB = this.geocacheDB;
+
+	// If the min and max are uninitialized then initialize them.
+	if(geocacheDB.length > 1) {
+		minlat = geocacheDB[0].lat;
+		maxlat = geocacheDB[0].lat;
+		minlon = geocacheDB[0].lon;
+		maxlon = geocacheDB[0].lon;
+	} else {
+		alert("There's no waypoints!!");
+		return;
+	}
+	
+	for(var i = 1; i < geocacheDB.length; i++) {
+		var lat = geocacheDB[i].lat;
+		var lon = geocacheDB[i].lon;
+
+		if(lon < minlon) minlon = lon;
+		if(lon > maxlon) maxlon = lon;
+		if(lat < minlat) minlat = lat;
+		if(lat > maxlat) maxlat = lat;
+	}
+
+	this.minlat = minlat;
+	this.maxlat = maxlat;
+	this.minlon = minlon;
+	this.maxlon = maxlon;
+}
