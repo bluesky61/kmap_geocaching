@@ -58,6 +58,7 @@
 			var _file = document.getElementById('_file');
 			var _idUser = document.getElementById('userid');
 			$("#_submit").click( function(){upload(koMap, geocacheDB)});
+			$("#curPos").click( function(){currentLocation(koMap)});
 			$("#wdialog").dialog({autoOpen: false, });
 		});
 	</script>
@@ -91,13 +92,13 @@
 			</fieldset>
 		</form>
 
-		<p></p>
+		<!-- p></p>
 		<form>
 			<fieldset>
 				<legend>현재위치 찾아가기</legend>
 				<button type="button" id="curPos" >현재위치로</button> 
 			</fieldset>
-		</form>
+		</form -->
 		<p></p>
 	</div>
 	<div id="dmap"></div>

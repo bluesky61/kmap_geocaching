@@ -73,9 +73,9 @@ Geocache.prototype.makeHTML = function() {
 };
 
 // constructor
-function GeocacheDB(GPXOwner){
+function GeocacheDB(){
 	this.geocacheDB = new Array();
-	this.GPXOwner = GPXOwner;
+	this.GPXOwner = null;
 }
 
 // read-in gpx file.

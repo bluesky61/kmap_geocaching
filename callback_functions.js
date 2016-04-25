@@ -37,23 +37,6 @@ var checkLogin = function(_idUser, _pwUser, koMap, geocacheDB){
 	}
 }
 
-// panning to current position
-var currentLocation = function(pos){
-
-	if (!navigator.geolocation) throw "No support for location information!";
-	
-	var cLat = pos.coords.latitude;
-	var cLon = pos.coords.longitude;
-
-	if(geocaches.cMap == "google")
-		geocaches.gMap.setCenter(new google.maps.LatLng(cLat, cLon));
-	else if(geocaches.cMap == "daum")
-		geocaches.dMap.setCenter(new daum.maps.LatLng(cLat, cLon));
-	else
-		geocaches.nMap.setCenter(new nhn.api.map.LatLng(cLat, cLon));
-	
-}
-
 // File Upload
 var upload = function(koMap, geocacheDB ){
 	if(_file.files.length === 0){
@@ -102,3 +85,23 @@ var upload = function(koMap, geocacheDB ){
 	request.open('POST', 'upload_gpx.php');
 	request.send(data);
 }
+
+// panning to current position
+// not working now
+/*
+var currentLocation = function(koMap){
+
+  if(navigator.geolocation) {
+	navigator.geolocation.getCurrentPosition(function(position) {
+		var cLat = position.coords.latitude;
+		var cLon = position.coords.longitude;
+
+		if(geocaches.cMap == "google")
+			koMap.gMap.setCenter(new google.maps.LatLng(cLat, cLon));
+		else if(geocaches.cMap == "daum")
+			koMap.dMap.setCenter(new daum.maps.LatLng(cLat, cLon));
+		else
+			koMap.nMap.setCenter(new nhn.api.map.LatLng(cLat, cLon));
+    }); }
+}
+*/
