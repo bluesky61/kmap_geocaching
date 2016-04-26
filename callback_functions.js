@@ -6,8 +6,7 @@
 // ---------------------------------
 
 var guestIdPw = [
-	{"gcId":"guest", "gcPw":"1234"},
-	{"gcId":"test", "gcPw":"1234"},
+	{"gcId":"guest", "gcPw":"guest"},
 	{"gcId":"bluesky61", "gcPw":"bluesky61" },
 	{"gcId":"hkbaik", "gcPw" : "hkbaik" },
 	{"gcId":"generalred", "gcPw" : "generalred" },
@@ -16,17 +15,18 @@ var guestIdPw = [
 	{"gcId":"hl1shy", "gcPw" : "hl1shy" },
 	{"gcId":"suk8a", "gcPw" : "suk8a" },
 	{"gcId":"K-one", "gcPw" : "K-one" },
+	{"gcId":"orbee", "gcPw" : "orbee" },
 	{"gcId":"bluejay99", "gcPw" : "bluejay99" },
 	{"gcId":"YEHA", "gcPw" : "YEHA" }
 ];		
 
-var checkLogin = function(_idUser, _pwUser, koMap, geocacheDB){
+var checkLogin = function(_idUser, _pwUser){
 
 	var found=-1;
 	for (var i=0;i<guestIdPw.length ;i++ )
 	{
 		if(_idUser == guestIdPw[i].gcId && _pwUser == guestIdPw[i].gcPw ){
-			found=i; break;
+			found=i+1; break;
 		}
 	}
 	if (found ==-1){
