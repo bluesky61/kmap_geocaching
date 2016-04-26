@@ -72,6 +72,7 @@ var upload = function(koMap, geocacheDB ){
 				$("#wdialog").dialog( "open" );
 				window.setTimeout(function(){
 					koMap.removeAllMarkers(); //If upper side, this should be deleted.
+					geocacheDB.geocacheDB=[];
 					geocacheDB.readGPXFile(_idUser);
 					koMap.createMarker(geocacheDB);
 					koMap.changeMap("daum");

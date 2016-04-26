@@ -1,7 +1,9 @@
 ﻿<!DOCTYPE html>
 <html>
 	<head>
-	<meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, width=device-width, target-densityDpi=device-dpi">	
+	<!-- meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, width=device-width, target-densityDpi=device-dpi" -->	
+	<meta content='user-scalable=no, initial-scale=1, width=device-width' id='viewport' name='viewport'>
+
 	<title>Draw Geocaches on Korean Maps</title>
 	<style>
 		html, body {width: 100%; height: 100%}
@@ -31,6 +33,9 @@
 	<script src="callback_functions.js"></script>
 	<script>
 		$(document).ready(function() {
+			var viewPortScale = 2 / window.devicePixelRatio; // scale for smartphone
+			$('#viewport').attr('content', 'user-scalable=no, initial-scale='+viewPortScale+', width=device-width');	
+			
 			var koMap = new GPXMap(); // initialize Maps
 			var geocacheDB = new GeocacheDB();
 
