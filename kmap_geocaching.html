@@ -46,19 +46,7 @@
 			$("#daum").click( function(){koMap.changeMap("daum")});
 			$("#naver").click( function(){koMap.changeMap("naver")});
 
-			$("#login").click( function(){	
-				var _idUser = document.getElementById("userid").value;
-				var _pwUser = document.getElementById("pwd").value;
-				if(checkLogin(_idUser, _pwUser) >0) {
-					$("#wdialog").dialog( "open" );
-					window.setTimeout(function(){
-						geocacheDB.readGPXFile(_idUser);
-						koMap.attachHelpCallback(geocacheDB);
-						koMap.createMarker(geocacheDB);
-						koMap.changeMap("daum");
-						$("#wdialog").dialog("close");
-						}, 100);
-				}});
+			$("#login").click( function(){readin(koMap, geocacheDB)});
 
 			var _file = document.getElementById('_file');
 			var _idUser = document.getElementById('userid');

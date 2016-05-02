@@ -16,6 +16,7 @@ var guestIdPw = [
 	{"gcId":"suk8a", "gcPw" : "suk8a" },
 	{"gcId":"K-one", "gcPw" : "K-one" },
 	{"gcId":"orbee", "gcPw" : "orbee" },
+	{"gcId":"wonkoo1", "gcPw" : "wonkoo1" },
 	{"gcId":"bluejay99", "gcPw" : "bluejay99" },
 	{"gcId":"YEHA", "gcPw" : "YEHA" }
 ];		
@@ -33,6 +34,23 @@ var checkLogin = function(_idUser, _pwUser){
 		alert("No such ID");
 	}else{  // Login Successful
 		return found;		
+	}
+}
+
+var readin = function(koMap, geocacheDB) {
+	var _idUser = document.getElementById("userid").value;
+	var _pwUser = document.getElementById("pwd").value;
+
+	if(checkLogin(_idUser, _pwUser) >0) {
+		$("#wdialog").dialog( "open" );
+		window.setTimeout(function(){
+			geocacheDB.geocacheDB = [];
+			geocacheDB.readGPXFile(_idUser);
+			koMap.attachHelpCallback(geocacheDB);
+			koMap.createMarker(geocacheDB);
+			koMap.changeMap("daum");
+			$("#wdialog").dialog("close");
+		}, 100);
 	}
 }
 
