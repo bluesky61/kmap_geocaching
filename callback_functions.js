@@ -44,6 +44,7 @@ var readin = function(koMap, geocacheDB) {
 	if(checkLogin(_idUser, _pwUser) >0) {
 		$("#wdialog").dialog( "open" );
 		window.setTimeout(function(){
+			koMap.removeAllMarkers(); 
 			geocacheDB.geocacheDB = [];
 			geocacheDB.readGPXFile(_idUser);
 			koMap.attachHelpCallback(geocacheDB);
