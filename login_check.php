@@ -1,7 +1,17 @@
 <?php
-$members = array('user1'=>'pw1',
-                 'user2'=>'pw2',
-                 'user3'=>'pw3');
+$members = array('guest'=>"guest",
+	"bluesky61"=>"bluesky61",
+	"hkbaik"=>"hkbaik",
+	"generalred"=> "generalred",
+	"Winny Lee"=>"Winny Lee",
+	"ttettu"=>"ttettu",
+	"hl1shy"=>"hl1shy",
+	"suk8a"=>"suk8a",
+	"K-one"=>"K-one",
+	"orbee"=>"orbee",
+	"wonkoo1"=>"wonkoo1",
+	"bluejay99"=>"bluejay99",
+	"YEHA"=>"YEHA" );
 
 if(isset($_POST['user_id']) and isset($_POST['user_pw'])){
     $user_id = $_POST['user_id'];

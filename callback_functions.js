@@ -5,6 +5,38 @@
 //			2016-04-19		version 0.1 
 // ---------------------------------
 
+var readin = function(koMap, geocacheDB){
+		var _idUser = $("#userid").val();
+		var _pwUser = $("#pwd").val();
+
+		var form_data = {
+                user_id: _idUser,
+                user_pw: _pwUser
+            };
+        $.ajax({
+            type: "POST",
+            url: "login_check.php",
+            data: form_data,
+            success: function (response) {
+                if (response == 'success') {
+					$("#wdialog").dialog( "open" );
+					window.setTimeout(function() {
+						koMap.removeAllMarkers(); 
+						geocacheDB.geocacheDB = [];
+						geocacheDB.readGPXFile(_idUser);
+						koMap.attachHelpCallback(geocacheDB);
+						koMap.createMarker(geocacheDB);
+						koMap.changeMap("daum");
+						$("#wdialog").dialog("close");
+						}, 100);
+				} else {  //check here!!!!!
+                    $("#wdialog").value = '아이디 또는 비밀번호가 잘못되었습니다';
+                }
+            }
+        });
+}
+
+/*
 var guestIdPw = [
 	{"gcId":"guest", "gcPw":"guest"},
 	{"gcId":"bluesky61", "gcPw":"bluesky61" },
@@ -21,7 +53,7 @@ var guestIdPw = [
 	{"gcId":"YEHA", "gcPw" : "YEHA" }
 ];		
 
-var checkLogin_o = function(_idUser, _pwUser){
+var checkLogin = function(_idUser, _pwUser){
 
 	var found=-1;
 	for (var i=0;i<guestIdPw.length ;i++ )
@@ -37,40 +69,9 @@ var checkLogin_o = function(_idUser, _pwUser){
 	}
 }
 
-var checkLogin = function(_idUser, _pwUser){
-	var data = new FormData();
-	data.append('username', _idUser);
-	data.append('password', _pwUser);
-
-	var request = new XMLHttpRequest();
-	request.onreadystatechange = function(){
-		if(request.readyState == 4){
-			try {
-				var resp = JSON.parse(request.response);
-			} catch (e){
-				var resp = {
-					status: 'error',
-					data: 'Unknown error occurred: [' + request.responseText + ']'
-				};
-			}
-//			console.log(resp.status + ': ' + resp.data);
-			
-			if(request.status == 200) {
-				return true;
-			}
-		}
-	};
-
-	request.open('POST', 'checklogin.php');
-	request.send(data);
-
-}
-
-
 var readin = function(koMap, geocacheDB) {
 	var _idUser = document.getElementById("userid").value;
 	var _pwUser = document.getElementById("pwd").value;
-
 	if(checkLogin(_idUser, _pwUser) >=0) {
 		$("#wdialog").dialog( "open" );
 		window.setTimeout(function(){
@@ -84,7 +85,7 @@ var readin = function(koMap, geocacheDB) {
 		}, 100);
 	}
 }
-
+*/
 // File Upload
 var upload = function(koMap, geocacheDB ){
 	if(_file.files.length === 0){
