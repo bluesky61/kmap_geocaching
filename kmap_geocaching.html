@@ -73,8 +73,8 @@
 		<form>
 			<fieldset>
 				<legend>GPX 파일 불러오기</legend>
-					지오캐싱 ID : <input type="text" id="userid" ><br>
-					패스워드 &nbsp;&nbsp;&nbsp;&nbsp;: <input type="password" id="pwd"><br><br>
+					지오캐싱 ID : <input type="text" id="userid" value="<?php echo $_COOKIE['username']; ?>"><br>
+					패스워드 &nbsp;&nbsp;&nbsp;&nbsp;: <input type="password" id="pwd" value="<?php echo $_COOKIE['password']; ?>"><br><br>
 					<input type="button" id="login" value="접속하기">
 					<div class='container'>
 						<hr>
