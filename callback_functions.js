@@ -36,56 +36,6 @@ var readin = function(koMap, geocacheDB){
         });
 }
 
-/*
-var guestIdPw = [
-	{"gcId":"guest", "gcPw":"guest"},
-	{"gcId":"bluesky61", "gcPw":"bluesky61" },
-	{"gcId":"hkbaik", "gcPw" : "hkbaik" },
-	{"gcId":"generalred", "gcPw" : "generalred" },
-	{"gcId":"Winny Lee", "gcPw" : "Winny Lee" },
-	{"gcId":"ttettu", "gcPw" : "ttettu" },
-	{"gcId":"hl1shy", "gcPw" : "hl1shy" },
-	{"gcId":"suk8a", "gcPw" : "suk8a" },
-	{"gcId":"K-one", "gcPw" : "K-one" },
-	{"gcId":"orbee", "gcPw" : "orbee" },
-	{"gcId":"wonkoo1", "gcPw" : "wonkoo1" },
-	{"gcId":"bluejay99", "gcPw" : "bluejay99" },
-	{"gcId":"YEHA", "gcPw" : "YEHA" }
-];		
-
-var checkLogin = function(_idUser, _pwUser){
-
-	var found=-1;
-	for (var i=0;i<guestIdPw.length ;i++ )
-	{
-		if(_idUser == guestIdPw[i].gcId && _pwUser == guestIdPw[i].gcPw ){
-			found=i+1; break;
-		}
-	}
-	if (found ==-1){
-		alert("No such ID");
-	}else{  // Login Successful
-		return found;		
-	}
-}
-
-var readin = function(koMap, geocacheDB) {
-	var _idUser = document.getElementById("userid").value;
-	var _pwUser = document.getElementById("pwd").value;
-	if(checkLogin(_idUser, _pwUser) >=0) {
-		$("#wdialog").dialog( "open" );
-		window.setTimeout(function(){
-			koMap.removeAllMarkers(); 
-			geocacheDB.geocacheDB = [];
-			geocacheDB.readGPXFile(_idUser);
-			koMap.attachHelpCallback(geocacheDB);
-			koMap.createMarker(geocacheDB);
-			koMap.changeMap("daum");
-			$("#wdialog").dialog("close");
-		}, 100);
-	}
-}
-*/
 // File Upload
 var upload = function(koMap, geocacheDB ){
 	if(_file.files.length === 0){
