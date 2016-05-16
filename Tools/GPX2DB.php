@@ -10,7 +10,7 @@ mb_http_output('UTF-8');
 // mySQL DB 연결
 require_once 'login.php';
 try { //Start of try. Open/Create table
-    $db = new PDO("mysql:host=$db_hostname;dbname=$db_database;charset=utf8mb4", 
+    $db = new PDO("mysql:host=$db_hostname;dbname=$db_database;charset=utf8", 
             $db_username, $db_password);
     $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); 
@@ -33,7 +33,7 @@ try { //Start of try. Open/Create table
       `DIFF` char(3) NOT NULL,
       `TERR` char(3) NOT NULL,
       `DISABLE` tinyint(1) NOT NULL
-    ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+    ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
 
     $db->exec($sql);
 
@@ -201,7 +201,7 @@ function stop($parser,$element_name)
             $_break = true;
         }
         
-        // echo "$num_geocaches : $g_gcnumber $g_title<br>";
+        echo "$num_geocaches : $g_gcnumber $g_title<br>";
         $stmt->execute();
 
         $geocache = array("GCNUMBER"=>"", "TITLE" => "", "LAT"=>0, "LON" => 0 , 
