@@ -15,10 +15,10 @@ var readin = function(koMap, geocacheDB){
             };
         $.ajax({
             type: "POST",
-            url: "login_check.php",
+            url: "login_check_sql.php",
             data: form_data,
             success: function (response) {
-                if (response == 'success') {
+                if (response == 'success' || response == "__RESET__") {
 					$("#wdialog").dialog( "open" );
 					window.setTimeout(function() {
 						koMap.removeAllMarkers(); 
