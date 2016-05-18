@@ -3,7 +3,10 @@
 /********************
  * Read GPX file and extract found information
  *  2016-5-15 by bluesky61
+ *       현재의 버그 : Found 로그가 아니면서 내용에 'Found it' 이라고 쓰면
+ *                    찾은사람이 Found it, id는 0으로 등록이 됨.
  */
+ini_set('max_execution_time', 300);
 
 mb_internal_encoding("UTF-8");
 mb_http_output('UTF-8'); 
@@ -11,36 +14,40 @@ mb_http_output('UTF-8');
 // mySQL DB 연결
 require_once 'login.php';
 try { //Start of try. Open/Create table
-    $db = new PDO("mysql:host=$db_hostname;dbname=$db_database;charset=utf8", 
+    $db = new PDO("mysql:host=$db_hostname;dbname=$db_database;charset=utf8mb4", 
             $db_username, $db_password);
     $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); 
 
     // Table 생성. 
-    $sql = "DROP TABLE IF EXISTS Founds";
+    $sql = "DROP TABLE IF EXISTS Founds_Finder";
     $db->exec($sql);
 
-    $sql = "CREATE TABLE `Founds` ("
+    $sql = "CREATE TABLE `Founds_Finder` ("
         . "`GCNumber` char(7) NOT NULL,"
-        . "`OWNERID` int(11) NOT NULL) "
-        . "ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
+        . "`FINDER` varchar(50) NOT NULL,"
+        . "`FINDERID` int(11) NOT NULL) "
+        . "ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
     $db->exec($sql);
     
-    $sql = "ALTER TABLE `Founds`"
+    $sql = "ALTER TABLE `Founds_Finder`"
         . "ADD KEY `GCNumber` (`GCNumber`),"
-        . "ADD KEY `OWNERID` (`OWNERID`)";
+        . "ADD KEY `FINDER` (`FINDER`),"
+        . "ADD KEY `FINDERID` (`FINDERID`)";
     $db->exec($sql);
 } catch (PDOException $e) {
     die("Error! : " . $e->getMessage() . "<br/>");
 }
 
 $g_gcnumber="";
-$g_ownerid=0;
+$g_finder="";
+$g_finderid=0;
 $num_geocaches = 0;
 
-$stmt = $db->prepare("INSERT INTO Founds (GCNumber, OWNERID) VALUES (?, ?)");
+$stmt = $db->prepare("INSERT INTO Founds_Finder (GCNumber, FINDER, FINDERID) VALUES (?, ?, ?)");
 $stmt->bindParam(1, $g_gcnumber, PDO::PARAM_STR);
-$stmt->bindParam(2, $g_ownerid, PDO::PARAM_INT);
+$stmt->bindParam(2, $g_finder, PDO::PARAM_STR);
+$stmt->bindParam(3, $g_finderid, PDO::PARAM_INT);
 
 
 // Initialize the XML parser
@@ -52,72 +59,82 @@ $is_foundlog = false;
 
 function start($parser, $element_name, $element_attrs) 
 {
-    global $index, $g_gcnumber, $g_ownerid, $is_LOGs, $is_type, $is_foundlog, $stmt;
+    global $index, $g_finderid, $is_LOGs, $is_type, $is_foundlog;
     
     switch($element_name) {
         case "NAME":
             $index = "GCNUMBER";
             break;
+        case "GROUNDSPEAK:LOGS":
+            $is_LOGs = true;
+            break;
         case "GROUNDSPEAK:TYPE":
             if($is_LOGs)
                 $is_type = true;
             break;
-        case "GROUNDSPEAK:LOGS":
-            $is_LOGs = true;
-            break;
         case "GROUNDSPEAK:FINDER":
-            $index = "OWNERID";
+            $index = "FINDER";
             break;
     }
     if(!empty($element_attrs)){
         foreach ($element_attrs AS $attidx =>$attdata){
-            if ($index == "OWNERID" AND $is_foundlog == true){
-                $g_ownerid = $attdata;
-                $stmt->execute();
-                $is_type = false;
-                $is_foundlog = false;
+            if ($is_foundlog == true AND $index == "FINDER" AND $attidx =="ID"){
+                $g_finderid = $attdata;
             }
         }
+    }
+}
+// Function to use when finding character data
+function char($parser,$data) 
+{
+    global $index, $is_LOGs, $is_type, $is_foundlog, $g_gcnumber, $num_geocaches;
+    global $stmt, $g_finder, $g_finderid;
+  
+    if($index == "GCNUMBER"){
+        $g_gcnumber= $data;
+        $num_geocaches ++;
+        $index = "";
+    }
+
+    if($is_LOGs AND $is_type AND $data == "Found it")
+        $is_foundlog = true;
+        
+    if($is_foundlog AND $index == 'FINDER'){
+        $g_finder = $data;
+        $index = "";
+    }
+        
+               
+    // for debugging
+    if($g_gcnumber == "GC6HNC3") {
+        $_break = true;
     }
 }
 
 // Function to use at the end of an element
 function stop($parser,$element_name) 
 {
-    global $is_LOGs, $is_type, $is_foundlog, $g_gcnumber, $num_geocaches;
+    global $index, $is_LOGs, $is_type, $is_foundlog, $g_finder, $g_finderid, 
+            $stmt, $g_gcnumber, $num_geocaches;
     
     if ($element_name == "GROUNDSPEAK:LOGS"){
         $is_LOGs = false;
     }
     if ($element_name == "GROUNDSPEAK:LOG"){
+        if($is_foundlog){
+            $stmt->execute();
+        }
+        $index =="";
         $is_type = false;
         $is_foundlog = false;
+        $g_finder ="";
+        $g_finderid ="";
     }
     if ($element_name == "WPT"){
         echo "$num_geocaches : $g_gcnumber <br>";
     }
-    
 }
 
-// Function to use when finding character data
-function char($parser,$data) 
-{
-    global $index, $is_LOGs, $is_type, $is_foundlog, $g_gcnumber, $num_geocaches;
-  
-    if($is_LOGs AND $is_type AND $data == "Found it")
-        $is_foundlog = true;
-        
-    if($index == "GCNUMBER"){
-        $g_gcnumber= $data;
-        $num_geocaches ++;
-        $index = "";
-    }
-    
-    // for debugging
-    if($g_gcnumber == "GC6HNWJ") {
-        $break = true;
-    }
-}
 
 // Specify element handler
 xml_set_element_handler($parser,"start","stop");
