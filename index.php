@@ -23,11 +23,15 @@
 	<script src="//code.jquery.com/jquery-1.10.2.js"></script>
 	<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 
-	<script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyD6Cw2m6ipHjPsd2HfHx5duc1M7tFls6ZY&language=ko"></script>
-	<script src="http://apis.daum.net/maps/maps3.js?apikey=0bef3f16e12741da64be522723f027ab"></script>
-	<!-- script src="http://openapi.map.naver.com/openapi/v2/maps.js?clientId=EUJ8CfA76G8mtqytMhQw"></script -->
-	<script src="http://openapi.map.naver.com/openapi/v2/maps.js?clientId=Qtus_QPl_Ff_XimMtIcZ"></script>
+	<!-- main script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyD6Cw2m6ipHjPsd2HfHx5duc1M7tFls6ZY&language=ko"></script -->
+	<!-- main script src="http://apis.daum.net/maps/maps3.js?apikey=0bef3f16e12741da64be522723f027ab"></script -->
+	<!-- main script src="http://openapi.map.naver.com/openapi/v2/maps.js?clientId=EUJ8CfA76G8mtqytMhQw"></script -->
+	<!-- gpx_test script src="http://openapi.map.naver.com/openapi/v2/maps.js?clientId=Qtus_QPl_Ff_XimMtIcZ"></script -->
 
+        <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyB-52v-NmfCHdSYdY-Z51OYlEqk8EySnLs&language=ko"></script>
+	<script src="http://apis.daum.net/maps/maps3.js?apikey=ac43b4fa06e3aa177aeb45ae83af4a5b"></script>
+        <script src="http://openapi.map.naver.com/openapi/v2/maps.js?clientId=tKwiqUIbN2oMs10svQyD"></script -->
+        
 	<script src="geocache.js"></script>
 	<script src="gpxmap.js"></script>
 	<script src="callback_functions.js"></script>
@@ -73,8 +77,8 @@
 		<form>
 			<fieldset>
 				<legend>GPX 파일 불러오기</legend>
-					지오캐싱 ID : <input type="text" id="userid" value="<?php echo $_COOKIE['username']; ?>"><br>
-					패스워드 &nbsp;&nbsp;&nbsp;&nbsp;: <input type="password" id="pwd" value="<?php echo $_COOKIE['password']; ?>"><br><br>
+					지오캐싱 ID : <input type="text" id="userid" ><br>
+					패스워드 &nbsp;&nbsp;&nbsp;&nbsp;: <input type="password" id="pwd" ><br><br>
 					<input type="button" id="login" value="접속하기">
 					<div class='container'>
 						<hr>

@@ -4,17 +4,17 @@
 //		programed by Min Heo (heomin61@gmail.com)
 //			2016-04-19		version 0.1 
 // ---------------------------------
-
+/*
 cacheImage={
-	"Traditional":"images/2.gif",
-	"Multi":"images/3.gif",
-	"Virtual":"images/4.gif",
-	"Letterbox":"images/5.gif",
-	"Event":"images/6.gif",
-	"Wherigo":"images/7.gif",
-	"Unknown":"images/8.gif",
-	"Earthcach":"images/9.gif",
-	"Cache":"images/cito.gif",
+	"Traditional Cache":"images/2.gif",
+	"Multi-cache":"images/3.gif",
+	"Virtual Cache":"images/4.gif",
+	"Letterbox Hybrid":"images/5.gif",
+	"Event Cache":"images/6.gif",
+	"Wherigo Cache":"images/7.gif",
+	"Unknown Cache":"images/8.gif",
+	"Earthcache":"images/9.gif",
+	"Cache In Trash Out Event":"images/cito.gif",
 	"Found":"images/found.png",
 	"Placed":"images/placed.png"
 };
@@ -71,7 +71,7 @@ Geocache.prototype.makeHTML = function() {
 
 	return html;
 };
-
+*/
 // constructor
 function GeocacheDB(){
 	this.geocacheDB = new Array();
@@ -81,7 +81,7 @@ function GeocacheDB(){
 	this.minlon = 0;
 	this.maxlon = 0;
 }
-
+/*
 // read-in gpx file.
 GeocacheDB.prototype.readGPXFile = function(GPXOwner) {
 	this.GPXOwner = GPXOwner;
@@ -107,10 +107,37 @@ GeocacheDB.prototype.readGPXFile = function(GPXOwner) {
 			alert("There's somthing woring");
 		}
 	});
-
-
 }
+*/
+GeocacheDB.prototype.getAllFromDB = function(Memberid, koMap) {
 
+	var form_data = {
+			memberid: Memberid
+		};
+
+	$.ajax({
+		type: "POST",
+		url: "getAllDB_sql.php",
+		dataType: "json",
+		data: form_data,
+		cache: false,
+		async: false,
+		success: function(data) {
+			this.geocacheDB = data;
+			koMap.attachHelpCallback(this);
+			koMap.createMarker(this);
+			koMap.changeMap("daum");
+		},
+		error: function (xhr, ajaxOptions, thrownError) {
+			alert(xhr.statusText);
+			alert(xhr.responseText);
+			alert(xhr.status);
+			alert(thrownError);
+			alert("There's somthing woring");
+		}
+	});
+}
+/*
 // read XML (GPX) into geocacheDB
 GeocacheDB.prototype.parseGPX = function(xmlDoc) {
 
@@ -153,7 +180,7 @@ GeocacheDB.prototype.parseGPX = function(xmlDoc) {
 		this.calc_MinMax();
 	}
 };
-
+*/
 // calculate boundary
 GeocacheDB.prototype.calc_MinMax = function() {
 // 

@@ -4,6 +4,19 @@
 //		programed by Min Heo (heomin61@gmail.com)
 //			2016-04-19		version 0.1 
 // ---------------------------------
+var cacheImage = {
+	"Traditional Cache" : "images/2.gif",
+	"Multi-cache" : "images/3.gif",
+	"Virtual Cache" : "images/4.gif",
+	"Letterbox Hybrid" : "images/5.gif",
+	"Event Cache" : "images/6.gif",
+	"Wherigo Cache" : "images/7.gif",
+	"Unknown Cache" : "images/8.gif",
+	"Earthcache" : "images/9.gif",
+	"Cache In Trash Out Event" : "images/cito.gif",
+	"Found" : "images/found.png",
+	"Placed" : "images/placed.png"
+	};
 
 function GPXMap() {
 //constructor
@@ -93,7 +106,6 @@ GPXMap.prototype.attachHelpCallback = function(geocacheDB) {
 	var nInfoWindow = this.nInfoWindow;
 
 	var gDB = geocacheDB.geocacheDB;
-	var length = geocacheDB.geocacheDB.length;
 
 // Google Map
 	function openGHelpWindow(gmarker) {
@@ -103,17 +115,28 @@ GPXMap.prototype.attachHelpCallback = function(geocacheDB) {
 
 		if(gInfoWindow) gInfoWindow.close();
 
-		for( var j=0; j< length; j++){
-			if(gcNum == gDB[j].gcNumber) break;
-		}
-		html = gDB[j].makeHTML();
+		/* get HTML from server. with gcnumber*/
+		var form_data = {
+			gcnumber: gcNum
+		};
 
-		gInfoWindow = new google.maps.InfoWindow({
-			content: html,
-			size: new google.maps.Size(50,50)
+		$.ajax({
+			type: "POST",
+			url: "getHTMLFromDB.php",
+			data: form_data,
+			cache: false,
+			async: false,
+			success: function(data) {
+				html = data;
+				gInfoWindow = new google.maps.InfoWindow({
+					content: html,
+					size: new google.maps.Size(50,50)
+				});
+
+				gInfoWindow.open(gMap, gmarker);
+			}
 		});
 
-		gInfoWindow.open(gMap, gmarker);
 	}
 
 	this.makeGHelpCallback = function (gmarker) {
@@ -134,16 +157,25 @@ GPXMap.prototype.attachHelpCallback = function(geocacheDB) {
 
 		if(dInfoWindow) dInfoWindow.close();
 
-		for( var j=0; j< length; j++){
-			if(gcNum == gDB[j].gcNumber) break;
-		}
-		html = gDB[j].makeHTML();
+		var form_data = {
+			gcnumber: gcNum
+		};
 
-		dInfoWindow = new daum.maps.InfoWindow({
-			content: html
+		$.ajax({
+			type: "POST",
+			url: "getHTMLFromDB.php",
+			data: form_data,
+			cache: false,
+			success: function(data) {
+				html = data;
+				dInfoWindow = new daum.maps.InfoWindow({
+					content: html
+				});
+
+				dInfoWindow.open(dMap, dmarker);
+			}
 		});
 
-		dInfoWindow.open(dMap, dmarker);
 	}
 
 	this.makeDHelpCallback = function(dmarker) {
@@ -168,20 +200,28 @@ GPXMap.prototype.attachHelpCallback = function(geocacheDB) {
 			if(nInfoWindow) nInfoWindow.setVisible(false);
 		}
 		
-		for( var j=0; j< length; j++){
-			if(gcNum == gDB[j].gcNumber) break;
-		}
-		html = gDB[j].makeHTML();
+		var form_data = {
+			gcnumber: gcNum
+		};
 
-		nInfoWindow = new nhn.api.map.InfoWindow({
-			point: oEvent.target.getPoint(),
-			content: html
+		$.ajax({
+			type: "POST",
+			url: "getHTMLFromDB.php",
+			data: form_data,
+			cache: false,
+			success: function(data) {
+				html = data;
+				nInfoWindow = new nhn.api.map.InfoWindow({
+					point: oEvent.target.getPoint(),
+					content: html
+				});
+				nInfoWindow.setOpacity(1);
+				nInfoWindow.autoPosition();
+				nInfoWindow.setVisible(true);
+
+				nMap.addOverlay(nInfoWindow); 
+			}
 		});
-		nInfoWindow.setOpacity(1);
-		nInfoWindow.autoPosition();
-		nInfoWindow.setVisible(true);
-
-		nMap.addOverlay(nInfoWindow); 
 	});
 
 	var oLabel = new nhn.api.map.MarkerLabel();
@@ -209,39 +249,22 @@ GPXMap.prototype.createMarker = function(geocacheDB) {
 	var dMap = this.dMap;
 	var nMap = this.nMap;
 
-	var GPXOwner = geocacheDB.GPXOwner;
 	var gDB = geocacheDB.geocacheDB;
 	var length = geocacheDB.geocacheDB.length;
 
 	for(var i=0; i < length; i++){
 
-		var lat = gDB[i].lat;
-		var lon = gDB[i].lon;
-		var gcIcon = gDB[i].gcType;
+		var gcNumber = gDB[i][0];
+		var gcTitle = gDB[i][1];
+		var lat = gDB[i][2];
+		var lon = gDB[i][3];
+		var gcIcon = gDB[i][4];
 
-		if (GPXOwner !='guest') {
-			if(gDB[i].gcPlaced) gcIcon = "Placed";
-			if(gDB[i].gcFound) gcIcon ="Found";
-		}
-/* if(
-!(gcIcon =="Traditional" ||
-gcIcon =="Multi" ||
-gcIcon =="Virtual" ||
-gcIcon =="Letterbox" ||
-gcIcon =="Event" ||
-gcIcon =="Wherigo" ||
-gcIcon =="Unknown" ||
-gcIcon =="Earthcach" ||
-gcIcon =="Cache" ||
-gcIcon =="Found" ||
-gcIcon =="Placed"))
-	break;
-*/
 		// Google Map
 		var gmarker = new google.maps.Marker({
 			position: new google.maps.LatLng(lat,lon),
 			icon: {url:cacheImage[gcIcon]},
-			title : gDB[i].gcNumber + '\n' + gDB[i].gcTitle,
+			title : gcNumber + '\n' + gcTitle,
 			map: gMap
 		});
 
@@ -262,7 +285,7 @@ gcIcon =="Placed"))
 			position: dposition,
 			image: dicon
 		});
-		dmarker.setTitle(gDB[i].gcNumber + '\n' + gDB[i].gcTitle);
+		dmarker.setTitle(gcNumber + '\n' + gcTitle);
 		dmarker.setMap(dMap);
 
 		this.dMarkers.push(dmarker);
@@ -275,7 +298,7 @@ gcIcon =="Placed"))
 		var nposition = new nhn.api.map.LatLng(lat, lon);
 		var nmarker = new nhn.api.map.Marker(oIcon, {
 			point : nposition,
-			title : gDB[i].gcNumber + '\n' + gDB[i].gcTitle
+			title : gcNumber + '\n' + gcTitle
 		});
 		nMap.addOverlay(nmarker); 
 		nmarker.setVisible(true);

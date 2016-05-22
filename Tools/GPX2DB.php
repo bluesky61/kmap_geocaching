@@ -16,42 +16,44 @@ try { //Start of try. Open/Create table
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); 
 
     // Table 생성. 
-    $sql = "DROP TABLE IF EXISTS Geocaches";
+    $sql = "DROP TABLE IF EXISTS geocaches";
     $db->exec($sql);
 
     $sql = "CREATE TABLE `geocaches` (
-      `GCNumber` char(7) NOT NULL,
-      `TITLE` varchar(100) NOT NULL,
-      `LAT` float NOT NULL,
-      `LON` float NOT NULL,
-      `URL` varchar(100) NOT NULL,
-      `HIDDEN` date NOT NULL,
-      `TYPE` varchar(50) NOT NULL,
-      `SIZE` char(10) NOT NULL,
-      `PLACEDBY` varchar(80) NOT NULL,
-      `OWNERID` int(11) NOT NULL,
-      `DIFF` char(3) NOT NULL,
-      `TERR` char(3) NOT NULL,
-      `DISABLE` tinyint(1) NOT NULL
+      `gcnumber` char(7) NOT NULL,
+      `title` varchar(100) NOT NULL,
+      `lat` float NOT NULL,
+      `lon` float NOT NULL,
+      `url` varchar(100) NOT NULL,
+      `hidden` date NOT NULL,
+      `type` varchar(50) NOT NULL,
+      `size` char(10) NOT NULL,
+      `placedby` varchar(80) NOT NULL,
+      `ownerid` int(11) NOT NULL,
+      `diff` char(3) NOT NULL,
+      `terr` char(3) NOT NULL,
+      `disable` tinyint(1) NOT NULL,
+	  `icon1` varcahr(50),
+	  `icon2` varcahr(50),
     ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
 
     $db->exec($sql);
 
     $sql = "ALTER TABLE `geocaches`
-      ADD PRIMARY KEY (`GCNumber`),
-      ADD KEY `LAT` (`LAT`),
-      ADD KEY `LON` (`LON`),
-      ADD KEY `TYPE` (`TYPE`),
-      ADD KEY `SIZE` (`SIZE`),
-      ADD KEY `PLACEDBY` (`PLACEDBY`),
-      ADD KEY `OWNERID` (`OWNERID`),
-      ADD KEY `DIFF` (`DIFF`),
-      ADD KEY `TERR` (`TERR`),
-      ADD KEY `DISABLE` (`DISABLE`)";
+      ADD PRIMARY KEY (`gcnumber`),
+      ADD KEY `LAT` (`lat`),
+      ADD KEY `LON` (`lon`),
+      ADD KEY `TYPE` (`type`),
+      ADD KEY `SIZE` (`size`),
+      ADD KEY `PLACEDBY` (`placedby`),
+      ADD KEY `OWNERID` (`ownerid`),
+      ADD KEY `DIFF` (`diff`),
+      ADD KEY `TERR` (`terr`),
+      ADD KEY `DISABLE` (`disable`)";
 
     $db->exec($sql);
 
-    $sql = "ALTER TABLE `geocaches` ADD FULLTEXT KEY `TITLE` (`TITLE`)";
+    $sql = "ALTER TABLE `geocaches` ADD FULLTEXT KEY `title` (`title`)";
     $db->query($sql);
 } catch (PDOException $e) {
     die("Error! : " . $e->getMessage() . "<br/>");
@@ -61,8 +63,8 @@ $g_gcnumber=$g_title=$g_url=$g_type=$g_placedby=$g_diff=$g_terr=$g_size="";
 $g_lat=$g_lon=$g_hidden=$g_ownerid=0;
 $g_disable=0;
 
-$stmt = $db->prepare("INSERT INTO geocaches (GCNumber, TITLE, LAT, LON, URL, "
-        . "HIDDEN, TYPE, SIZE, PLACEDBY, OWNERID, DIFF, TERR, DISABLE) "
+$stmt = $db->prepare("INSERT INTO geocaches (gcnumber, title, lat, lon, url, "
+        . "hidden, type, size, placedby, ownerid, diff, terr, disable) "
         . "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 $stmt->bindParam(1, $g_gcnumber, PDO::PARAM_STR);
 $stmt->bindParam(2, $g_title, PDO::PARAM_STR);

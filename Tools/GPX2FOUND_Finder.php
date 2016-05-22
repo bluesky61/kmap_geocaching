@@ -20,20 +20,20 @@ try { //Start of try. Open/Create table
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); 
 
     // Table 생성. 
-    $sql = "DROP TABLE IF EXISTS Founds_Finder";
+    $sql = "DROP TABLE IF EXISTS founds_finder";
     $db->exec($sql);
 
-    $sql = "CREATE TABLE `Founds_Finder` ("
-        . "`GCNumber` char(7) NOT NULL,"
-        . "`FINDER` varchar(50) NOT NULL,"
-        . "`FINDERID` int(11) NOT NULL) "
+    $sql = "CREATE TABLE `founds_finder` ("
+        . "`gcnumber` char(7) NOT NULL,"
+        . "`finder` varchar(50) NOT NULL,"
+        . "`finderid` int(11) NOT NULL) "
         . "ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
     $db->exec($sql);
     
-    $sql = "ALTER TABLE `Founds_Finder`"
-        . "ADD KEY `GCNumber` (`GCNumber`),"
-        . "ADD KEY `FINDER` (`FINDER`),"
-        . "ADD KEY `FINDERID` (`FINDERID`)";
+    $sql = "ALTER TABLE `founds_finder`"
+        . "ADD KEY `gcnumber` (`gcnumber`),"
+        . "ADD KEY `finder` (`finder`),"
+        . "ADD KEY `finderid` (`finderid`)";
     $db->exec($sql);
 } catch (PDOException $e) {
     die("Error! : " . $e->getMessage() . "<br/>");
@@ -44,7 +44,7 @@ $g_finder="";
 $g_finderid=0;
 $num_geocaches = 0;
 
-$stmt = $db->prepare("INSERT INTO Founds_Finder (GCNumber, FINDER, FINDERID) VALUES (?, ?, ?)");
+$stmt = $db->prepare("INSERT INTO Founds_Finder (gcnumber, finder, finderid) VALUES (?, ?, ?)");
 $stmt->bindParam(1, $g_gcnumber, PDO::PARAM_STR);
 $stmt->bindParam(2, $g_finder, PDO::PARAM_STR);
 $stmt->bindParam(3, $g_finderid, PDO::PARAM_INT);

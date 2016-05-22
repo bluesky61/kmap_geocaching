@@ -20,22 +20,21 @@ try { //Start of try. Open/Create table
     $sql = "DROP TABLE IF EXISTS KmapUsers";
     $db->exec($sql);
 
-    $sql = "CREATE TABLE `KmapUsers` (
-            `ID` varchar(20) NOT NULL,
+    $sql = "CREATE TABLE `kmapusers` (
+            `id` varchar(20) NOT NULL,
             `passwd` varchar(30) NOT NULL,
-            `Gname` varchar(50) NOT NULL,
-            `Gid` int(11) NOT NULL,
-            `ResetPw` char(5) NOT NULL,
+            `gname` varchar(50) NOT NULL,
+            `memberid` int(11) NOT NULL,
+            `resetpw` char(5) NOT NULL,
             PRIMARY KEY (`ID`)
           ) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
     $db->exec($sql);
     
     $sql = "ALTER TABLE `KmapUsers`"
-        . "ADD KEY `ID` (`ID`),"
         . "ADD KEY `Gname` (`Gname`)";
     $db->exec($sql);
     
-    $sql = "INSERT INTO `KmapUsers` (`ID`, `passwd`, `Gname`, `Gid`, `ResetPw`) VALUES "
+    $sql = "INSERT INTO `kmapusers` (`id`, `passwd`, `gname`, `memberid`, `resetpw`) VALUES "
         . "('bluesky61', 'bluesky61','bluesky61', 0, 'yes'),"
         . "('hkbaik', 'hkbaik', 'hkbaik', 0, 'yes'),"
         . "('generalred', 'generalred', 'generalred', 0, 'yes'),"

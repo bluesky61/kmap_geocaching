@@ -6,36 +6,40 @@
 // ---------------------------------
 
 var readin = function(koMap, geocacheDB){
-		var _idUser = $("#userid").val();
-		var _pwUser = $("#pwd").val();
+    var _idUser = $("#userid").val();
+    var _pwUser = $("#pwd").val();
 
-		var form_data = {
-                user_id: _idUser,
-                user_pw: _pwUser
-            };
-        $.ajax({
-            type: "POST",
-            url: "login_check_sql.php",
-            data: form_data,
-            success: function (response) {
-                if (response == 'success' || response == "__RESET__") {
-					$("#wdialog").dialog( "open" );
-					window.setTimeout(function() {
-						koMap.removeAllMarkers(); 
-						geocacheDB.geocacheDB = [];
-						geocacheDB.readGPXFile(_idUser);
-						koMap.attachHelpCallback(geocacheDB);
-						koMap.createMarker(geocacheDB);
-						koMap.changeMap("daum");
-						$("#wdialog").dialog("close");
-						}, 100);
-				} else {  //check here!!!!!
-                    $("#wdialog").value = '아이디 또는 비밀번호가 잘못되었습니다';
-                }
+    var form_data = {
+        user_id: _idUser,
+        user_pw: _pwUser
+    };
+    
+    $.ajax({
+        type: "POST",
+        url: "login_check_sql.php",
+        data: form_data,
+                    async: false,
+        success: function (response) {
+           $("#wdialog").value = response;
+           if (response == 'ERROR') {
+                $("#wdialog").value = 'Wait a moment';
+            } else {
+                MemberID = response;
+                $("#wdialog").dialog( "open" );
+                window.setTimeout(function() {
+                    koMap.removeAllMarkers(); 
+                    geocacheDB.geocacheDB = [];
+                    geocacheDB.getAllFromDB(MemberID, koMap);
+            /*	koMap.attachHelpCallback(geocacheDB);
+                    koMap.createMarker(geocacheDB);
+                    koMap.changeMap("daum"); */ //moved into getAllFromDB()
+                    $("#wdialog").dialog("close");
+                    }, 100);
             }
-        });
+        }
+    });
 }
-
+/*
 // File Upload
 var upload = function(koMap, geocacheDB ){
 	if(_file.files.length === 0){
@@ -66,7 +70,7 @@ var upload = function(koMap, geocacheDB ){
 				window.setTimeout(function(){
 					koMap.removeAllMarkers(); //If upper side, this should be deleted.
 					geocacheDB.geocacheDB=[];
-					geocacheDB.readGPXFile(_idUser);
+					geocacheDB.readGPXFile2(_idUser);
 					koMap.createMarker(geocacheDB);
 					koMap.changeMap("daum");
 					$("#wdialog").dialog("close");
@@ -77,6 +81,32 @@ var upload = function(koMap, geocacheDB ){
 
 	request.open('POST', 'upload_gpx.php');
 	request.send(data);
+}
+*/
+function getHTML(gcNum)
+{
+	var form_data = {
+		gcnumber: gcNum
+	};
+
+	$.ajax({
+		type: "POST",
+		url: "getHTMLFromDB.php",
+		data: form_data,
+		cache: false,
+		async: false,
+		success: function(data) {
+			html = data;
+			return html;
+		},
+		error: function (xhr, ajaxOptions, thrownError) {
+			alert(xhr.statusText);
+			alert(xhr.responseText);
+			alert(xhr.status);
+			alert(thrownError);
+			alert("There's somthing woring");
+		}
+	});
 }
 
 // panning to current position
