@@ -18,17 +18,14 @@ try { //Start of try. Open/Create table
 } catch (PDOException $e) {
     die("Error! : " . $e->getMessage() . "<br/>");
 }
-/*
+
 if(isset($_POST['memberid'])){
 	$memberid = $_POST['memberid'];
 } else {
 	die("ERROR - Please input User_ID and Password<br>");
 }
-*/
-$memberid = '2137969';
 
 $db->exec("UPDATE geocaches SET icon1 = type");
-$db->exec("UPDATE geocaches SET icon1 = 'Placed' WHERE ownerid = $memberid");
 
 $stmt = $db->prepare("UPDATE geocaches SET icon1 = 'Found' WHERE gcnumber = ?");
 $stmt->bindParam(1, $g_gcnumber, PDO::PARAM_STR);
@@ -38,6 +35,8 @@ foreach($results as $row) {
     $g_gcnumber = $row[0];
     $stmt->execute();
 }
+
+$db->exec("UPDATE geocaches SET icon1 = 'Placed' WHERE ownerid = $memberid");
 
 $result = $db->query("SELECT gcnumber, title, lat, lon, icon1 from geocaches");
 $gcresults = $result->fetchAll(PDO::FETCH_NUM);

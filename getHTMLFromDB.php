@@ -5,7 +5,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-$diffImage = ['1'  => "images/stars1.gif",
+$diffImage = array('1'  => "images/stars1.gif",
 	'1.5'=> "images/stars1_5.gif",
 	'2'  => "images/stars2.gif",
 	'2.5'=> "images/stars2_5.gif",
@@ -14,8 +14,8 @@ $diffImage = ['1'  => "images/stars1.gif",
 	'4'  => "images/stars4.gif",
 	'4.5'=> "images/stars4_5.gif",
 	'5'  => "images/stars5.gif"
-       ];
-$cacheImage = [
+       );
+$cacheImage = array(
 	"Traditional Cache" => "images/2.gif",
 	"Multi-cache" => "images/3.gif",
 	"Virtual Cache" => "images/4.gif",
@@ -27,8 +27,8 @@ $cacheImage = [
 	"Cache In Trash Out Event" => "images/cito.gif",
 	"Found" => "images/found.png",
 	"Placed" => "images/placed.png"
-];
-$sizeImage=[
+);
+$sizeImage= array(
 	"Micro" => "images/micro.gif",
 	"Small" => "images/small.gif",
 	"Regular" => "images/regular.gif",
@@ -36,7 +36,7 @@ $sizeImage=[
 	"Not chosen" => "images/not_chosen.gif",
 	"Virtual" => "images/virtual.gif",
 	"Other" => "images/other.gif"
-];
+);
 
 mb_internal_encoding("UTF-8");
 mb_http_output('UTF-8'); 
@@ -49,22 +49,32 @@ try { //Start of try. Open/Create table
     $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); 
 } catch (PDOException $e) {
-    die("Error! : " . $e->getMessage() . "<br/>");
+    die("Error in connection ! : " . $e->getMessage() . "<br/>");
 }
 
     $gcNumber = $_POST['gcnumber'];
 //    $gcNumber = 'GC6FR4H';
 
+try {
     $result = $db->query("select * from geocaches where gcnumber = '" . $gcNumber . "'");
     $row = $result ->fetch();
-
-    $html = "<div style='font-size: 12px;background-color:#FFFFFF;width:310px'> <table border='0'><tr><td colspan='2'>"
+} catch (PDOException $e) {
+    die("Error! in fetch : " . $e->getMessage() . "<br/>");
+}
+    $tot_width =300;
+    $left_width = 150;
+    if (strlen($row['title']) > 40 || strlen($row['placedby'])>40){
+        $tot_width = 400;
+        $left_with = 250;
+    }
+        
+    $html = "<div style='font-size: 12px;background-color:#FFFFFF;width:" . $tot_width. "px'> <table border='0'><tr><td colspan='2'>"
 	. "<img src=" . $cacheImage[$row['type']] . ">"
 	. "<a href=" . $row['url'] . " target='_blank'><span><b>" . $row['title'] . "</b></a></span><span style='float:right'>" . $row ['gcnumber'] . "</span><br /></td></tr>"
-	. "<tr><td width='150'>Created by : " . $row['owner'] . "</td><td width='150'>Hidden : " . $row['hidden'] . "</td></tr>"
-	. "<tr><td>Difficulty : <img src=" . $diffImage[$row['diff']] . "></td><td>Terrain : <img src=" . $diffImage[$row['terr']] . "></td></tr>"
-	. "<tr><td>Size : <img src=" . $sizeImage[$row['size']] . "></td><td>Type : " . $row['type'] . "</td></tr></table></div>";
+	. "<tr><td colspan='2'>Created by : " . $row['placedby'] . "</td></tr>"
+	. "<tr><td width='$left_width'>Difficulty : <img src=" . $diffImage[$row['diff']] . "></td><td>Terrain : <img src=" . $diffImage[$row['terr']] . "></td></tr>"
+	. "<tr><td>Size : <img src=" . $sizeImage[$row['size']] . "></td><td width='160'>Hidden : " . $row['hidden'] . "</td></tr></table></div>";
 
-echo $html;
+ exit($html);
 ?>    
     

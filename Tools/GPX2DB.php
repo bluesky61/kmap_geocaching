@@ -33,23 +33,21 @@ try { //Start of try. Open/Create table
       `diff` char(3) NOT NULL,
       `terr` char(3) NOT NULL,
       `disable` tinyint(1) NOT NULL,
-	  `icon1` varcahr(50),
-	  `icon2` varcahr(50),
+      `icon1` varchar(50),
+      `icon2` varchar(50)
     ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
 
     $db->exec($sql);
 
     $sql = "ALTER TABLE `geocaches`
       ADD PRIMARY KEY (`gcnumber`),
-      ADD KEY `LAT` (`lat`),
-      ADD KEY `LON` (`lon`),
-      ADD KEY `TYPE` (`type`),
-      ADD KEY `SIZE` (`size`),
-      ADD KEY `PLACEDBY` (`placedby`),
-      ADD KEY `OWNERID` (`ownerid`),
-      ADD KEY `DIFF` (`diff`),
-      ADD KEY `TERR` (`terr`),
-      ADD KEY `DISABLE` (`disable`)";
+      ADD KEY `lat` (`lat`),
+      ADD KEY `lon` (`lon`),
+      ADD KEY `type` (`type`),
+      ADD KEY `size` (`size`),
+      ADD KEY `placedby` (`placedby`),
+      ADD KEY `ownerid` (`ownerid`),
+      ADD KEY `disable` (`disable`)";
 
     $db->exec($sql);
 
