@@ -335,7 +335,7 @@ GPXMap.prototype.changeMap = function(service){
     var cenPoint;
     var cenX = cenY = 0;
 
-    var oldLevel, newLevel;
+    var dLevel, nLevel, gLevel;
 
     if(oldservice == 'old') {
         $('#dmap').hide();
@@ -355,7 +355,9 @@ GPXMap.prototype.changeMap = function(service){
         cenY = cenPoint.getLat();
         cenX = cenPoint.getLng();
 
-        oldLevel = dMap.getLevel();
+        dLevel = dMap.getLevel();
+        nLevel = 15 - dLevel;
+        gLevel = 20 - dLevel;
 
         $('#dmap').hide();
         $('#daum').css("background-color", "LightGray");
@@ -364,7 +366,10 @@ GPXMap.prototype.changeMap = function(service){
         cenY = cenPoint.getY();
         cenX = cenPoint.getX();
 
-        oldLevel = nMap.getLevel();
+        nLevel = nMap.getLevel();
+        dLevel = 15 - nLevel;
+        gLevel = nLevel + 5;
+        
         $('#nmap').hide();
         $('#naver').css("background-color", "LightGray");
     } else if(oldservice == 'google') {
@@ -372,48 +377,56 @@ GPXMap.prototype.changeMap = function(service){
         cenY = cenPoint.lat();
         cenX = cenPoint.lng();
 
-        oldLevel = gMap.getZoom();
+        gLevel = gMap.getZoom();
+        nLevel = gLevel -5;
+        dLevel = 20 - gLevel;
         $('#gmap').hide();
         $('#google').css("background-color", "LightGray");
     }
-
+/*
+ * dLevel = 20 - gLevel
+ * dLevel = 15 - nLevel
+ * nLevel = gLevel -5;
+ * nLevel = 15 - dLevel
+ * gLevle = nLevel + 5
+ * gLevel = 20 - dLevel
+ *===== 
+ * daum    naver   google
+ *   1       14      19
+ *   2       13      18
+ *   3       12      17
+ *   
+ *   7        8      13 (여기보다 축소하면(아래) 아이콘 작은 걸로 바꿈)
+ *   
+ *   13       2       7
+ *   14       1       6 (축소)
+ */
+    if(dLevel > 14 ) dLevel = 14;
+    if(dLevel < 1) dLevel = 1;
+    if(nLevel > 14) nLevel = 14;
+    if(nLevel < 1) nLevel = 1;
+    if(gLevel > 19) gLevel = 19;
+    if(gLevel < 1) gLevel = 1;
+    
+    if(cenX <123 || cenX >133) cenX = 127;
+    if(cenY <32 || cenY>39) cenY = 37;
+    
     if (service == "daum") {
-        if(oldservice =='google')
-                newLevel = 20 -oldLevel;
-        else if (oldservice == 'naver')
-                newLevel = 15 - oldLevel;
-        if (newLevel >14) newLevel = 14;
-        if (newLevel <1) newLevel =1;
-        dMap.setLevel(newLevel);
+        dMap.setLevel(dLevel);
 
         dMap.setCenter(new daum.maps.LatLng(cenY, cenX));
 
         $('#dmap').show();
         $('#daum').css("background-color", "SkyBlue ");
     } else if (service == 'naver') {
-        if(oldservice =='google')
-                newLevel = oldLevel - 5;
-        else if (oldservice == 'daum')
-                newLevel = 15 - oldLevel;
-
-        if (newLevel >14) newLevel = 14;
-        if (newLevel <1) newLevel =1;
-        nMap.setLevel(newLevel);
+        nMap.setLevel(nLevel);
 
         nMap.setCenter(new nhn.api.map.LatLng(cenY, cenX));
 
         $('#nmap').show();
         $('#naver').css("background-color", "SkyBlue ");
     } else { //google
-        if(oldservice =='naver')
-                newLevel = oldLevel + 5;
-        else if (oldservice == 'daum')
-                newLevel =  20 - oldLevel;
-
-        if (newLevel >19) newLevel = 19;
-        if (newLevel <6) newLevel =6;
-
-        gMap.setZoom(newLevel);
+        gMap.setZoom(gLevel);
 
         gMap.setCenter(new google.maps.LatLng(cenY, cenX));
 
