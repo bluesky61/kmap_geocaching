@@ -5,7 +5,7 @@
 //			2016-04-19		version 0.1 
 // ---------------------------------
 
-var readin = function(koMap, geocacheDB){
+var readin = function(koMap, geocacheDB, whichmap){
     var _idUser = $("#userid").val();
     var _pwUser = $("#pwd").val();
 
@@ -19,16 +19,18 @@ var readin = function(koMap, geocacheDB){
         url: "login_check_sql.php",
         data: form_data,
         success: function (response) {
-            $("#wdialog").value = response;
-            if (response == 'ERROR') {
-                $("#wdialog").value = 'Wait a moment';
+            if(response=="ERROR"){
+                $("#wdialog").text('No such id/pw').dialog("open");
+                window.setTimeout(function() {
+                    $("#wdialog").dialog("close");
+                }, 1000);
             } else {
                 MemberID = response;
-                $("#wdialog").dialog( "open" );
+                $("#wdialog").text('Wait a moment!').dialog( "open" );
                 window.setTimeout(function() {
-                    koMap.removeAllMarkers(); 
+                    koMap.removeAllMarkers(whichmap); 
                     geocacheDB.geocacheDB = [];
-                    geocacheDB.getAllFromDB(MemberID, koMap);
+                    geocacheDB.getAllFromDB(MemberID, koMap, whichmap);
                     $("#wdialog").dialog("close");
                 }, 100);
             }

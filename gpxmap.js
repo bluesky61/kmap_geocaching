@@ -240,7 +240,7 @@ GPXMap.prototype.attachHelpCallback = function(geocacheDB) {
 
 };
 
-GPXMap.prototype.createMarker = function(geocacheDB) {
+GPXMap.prototype.createMarker = function(geocacheDB, whichmap) {
     var gMap = this.gMap;
     var dMap = this.dMap;
     var nMap = this.nMap;
@@ -255,20 +255,7 @@ GPXMap.prototype.createMarker = function(geocacheDB) {
         var lon = gDB[i][3];
         var gcIcon = gDB[i][4];
 
-        // Google Map
-        var gmarker = new google.maps.Marker({
-            position: new google.maps.LatLng(lat,lon),
-            icon: {url:cacheImage[gcIcon]},
-            title : gcNumber + '\n' + gcTitle,
-            map: gMap
-        });
-
-        this.gMarkers.push(gmarker);
-
-        google.maps.event.addListener(gmarker, "click", this.makeGHelpCallback(gmarker));
-
         // Daum Map
-
         var dposition = new daum.maps.LatLng(lat, lon);
 
         var dicon = new daum.maps.MarkerImage(
@@ -287,6 +274,21 @@ GPXMap.prototype.createMarker = function(geocacheDB) {
 
         daum.maps.event.addListener(dmarker, "click", this.makeDHelpCallback(dmarker));
 
+        if (whichmap == "daum")
+            continue;
+        
+        // Google Map
+        var gmarker = new google.maps.Marker({
+            position: new google.maps.LatLng(lat,lon),
+            icon: {url:cacheImage[gcIcon]},
+            title : gcNumber + '\n' + gcTitle,
+            map: gMap
+        });
+
+        this.gMarkers.push(gmarker);
+
+        google.maps.event.addListener(gmarker, "click", this.makeGHelpCallback(gmarker));
+
         // Naver Map
         var oSize = new nhn.api.map.Size(16, 16);
         var oIcon = new nhn.api.map.Icon(cacheImage[gcIcon], oSize);
@@ -302,22 +304,25 @@ GPXMap.prototype.createMarker = function(geocacheDB) {
     }
 };
 
-GPXMap.prototype.removeAllMarkers = function(){
+GPXMap.prototype.removeAllMarkers = function(whichmap){
     var gmarkers = this.gMarkers;
     var dmarkers = this.dMarkers;
     var nmarkers = this.nMarkers;
-
-// googlemaps
-    for (var i = 0; i < gmarkers.length; i++) {
-        gmarkers[i].setMap(null);
-    }
-    gmarkers = [];
 
 // daum map
     for (var i = 0; i < dmarkers.length; i++) {
         dmarkers[i].setMap(null);
     }
     dmarkers = [];
+
+    if(whichmap == 'daum')
+        return;
+    
+// googlemaps
+    for (var i = 0; i < gmarkers.length; i++) {
+        gmarkers[i].setMap(null);
+    }
+    gmarkers = [];
 
 // naver map
     this.nMap.clearOverlay();

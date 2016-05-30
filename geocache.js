@@ -14,7 +14,7 @@ function GeocacheDB(){
     this.maxlon = 0;
 }
 
-GeocacheDB.prototype.getAllFromDB = function(Memberid, koMap) {
+GeocacheDB.prototype.getAllFromDB = function(Memberid, koMap, whichmap) {
 
     var form_data = {
         memberid: Memberid
@@ -30,7 +30,7 @@ GeocacheDB.prototype.getAllFromDB = function(Memberid, koMap) {
         success: function(data) {
             this.geocacheDB = data;
             koMap.attachHelpCallback(this);
-            koMap.createMarker(this);
+            koMap.createMarker(this, whichmap);
             koMap.changeMap("daum");
         },
         error: function (xhr, ajaxOptions, thrownError) {

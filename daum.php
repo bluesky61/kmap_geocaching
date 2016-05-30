@@ -32,18 +32,14 @@
     <script src="//code.jquery.com/jquery-1.10.2.js"></script>
     <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 
-<!-- for main -->
+<!-- for main l -->
     <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyD6Cw2m6ipHjPsd2HfHx5duc1M7tFls6ZY&language=ko"></script>
     <script src="http://apis.daum.net/maps/maps3.js?apikey=0bef3f16e12741da64be522723f027ab"></script>
-    <script src="http://openapi.map.naver.com/openapi/v2/maps.js?clientId=EUJ8CfA76G8mtqytMhQw"></script>
-<!-- for gpx_test 
-    <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyD6Cw2m6ipHjPsd2HfHx5duc1M7tFls6ZY&language=ko"></script>
-    <script src="http://apis.daum.net/maps/maps3.js?apikey=0bef3f16e12741da64be522723f027ab"></script>
-    <script src="http://openapi.map.naver.com/openapi/v2/maps.js?clientId=Qtus_QPl_Ff_XimMtIcZ"></script>
-<!-- for local 
+    <script src="http://openapi.map.naver.com/openapi/v2/maps.js?clientId=Rq1jSZlHzMc72BAR72L4"></script>
+<!-- for local
     <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyB-52v-NmfCHdSYdY-Z51OYlEqk8EySnLs&language=ko"></script>
     <script src="http://apis.daum.net/maps/maps3.js?apikey=ac43b4fa06e3aa177aeb45ae83af4a5b"></script>
-    <script src="http://openapi.map.naver.com/openapi/v2/maps.js?clientId=tKwiqUIbN2oMs10svQyD"></script>
+    <script src="http://openapi.map.naver.com/openapi/v2/maps.js?clientId=BLZn7so3ptosnNfUW_sW"></script>
 -->
     <script src="geocache.js"></script>
     <script src="gpxmap.js"></script>
@@ -63,7 +59,7 @@
             $("#daum").click( function(){koMap.changeMap("daum")});
             $("#naver").click( function(){koMap.changeMap("naver")});
 
-            $("#login").click( function(){readin(koMap, geocacheDB, "ALL")});
+            $("#login").click( function(){readin(koMap, geocacheDB, "daum")});
 
             var _file = document.getElementById('_file');
             var _idUser = document.getElementById('userid');

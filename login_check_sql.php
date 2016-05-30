@@ -24,11 +24,12 @@ $stmt = $db->prepare("SELECT * FROM kmapusers WHERE userid = ? AND passwd = ?");
 $stmt->bindParam(1, $user_id, PDO::PARAM_STR);
 $stmt->bindParam(2, $user_pw, PDO::PARAM_STR);
 
-if($stmt->execute()) {
+$stmt->execute();
+$row = $stmt->fetch(PDO::FETCH_ASSOC);
+if($row != 0) {
     setcookie('userid',$user_id);
     setcookie('passwd',$user_pw);
 
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
     /* if ($row['ResetPw']='yes') {
             echo("__RESET__");
     } */
