@@ -31,8 +31,9 @@
     <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
     <script src="//code.jquery.com/jquery-1.10.2.js"></script>
     <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-
-<!-- for main -->
+    <script src="jquery.cookie.js"></script> 
+    
+<!-- for main --> 
     <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyD6Cw2m6ipHjPsd2HfHx5duc1M7tFls6ZY&language=ko"></script>
     <script src="http://apis.daum.net/maps/maps3.js?apikey=0bef3f16e12741da64be522723f027ab"></script>
     <script src="http://openapi.map.naver.com/openapi/v2/maps.js?clientId=EUJ8CfA76G8mtqytMhQw"></script>
@@ -44,7 +45,7 @@
     <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyB-52v-NmfCHdSYdY-Z51OYlEqk8EySnLs&language=ko"></script>
     <script src="http://apis.daum.net/maps/maps3.js?apikey=ac43b4fa06e3aa177aeb45ae83af4a5b"></script>
     <script src="http://openapi.map.naver.com/openapi/v2/maps.js?clientId=tKwiqUIbN2oMs10svQyD"></script>
--->
+--> 
     <script src="geocache.js"></script>
     <script src="gpxmap.js"></script>
     <script src="callback_functions.js"></script>

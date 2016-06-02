@@ -14,7 +14,7 @@ mb_http_output('UTF-8');
 // mySQL DB 연결
 require_once 'login.php';
 try { //Start of try. Open/Create table
-    $db = new PDO("mysql:host=$db_hostname;dbname=$db_database;charset=utf8", 
+    $db = new PDO("mysql:host=$db_hostname;dbname=$db_database;charset=utf8mb4", 
             $db_username, $db_password);
     $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); 
@@ -27,7 +27,7 @@ try { //Start of try. Open/Create table
       ( `gcnumber` char(7) NOT NULL,
         `finder` varchar(50) NOT NULL,
         `finderid` int(11) NOT NULL 
-       ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
+       ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
     $db->exec($sql);
     
     $sql = "ALTER TABLE `founds_finder`

@@ -55,6 +55,20 @@ function GPXMap() {
         right : 10
     });
 
+    nMap.attach('dragend', function(oCustomEvent) {
+        cenPoint = nMap.getCenter();
+        cenLat = cenPoint.getY();
+        cenLng = cenPoint.getX();
+
+        nLevel = nMap.getLevel();
+        gLevel = nLevel + 5;
+
+        $.cookie('cenLat', cenLat);
+        $.cookie('cenLng', cenLng);
+        $.cookie('gLevel', gLevel);
+    });
+
+
     this.nMap = nMap;
 
     // Daum Map
@@ -69,11 +83,34 @@ function GPXMap() {
     var mapTypeControl = new daum.maps.MapTypeControl();
     dMap.addControl(mapTypeControl, daum.maps.ControlPosition.TOPRIGHT);
 
+    daum.maps.event.addListener(dMap, "idle", function(){
+        var cenPoint = dMap.getCenter();
+        var cenLat = cenPoint.getLat();
+        var cenLng = cenPoint.getLng();
+
+        var dLevel = dMap.getLevel();
+        var gLevel = 20 - dLevel;
+
+        $.cookie('cenLat', cenLat);
+        $.cookie('cenLng', cenLng);
+        $.cookie('gLevel', gLevel);
+    });
+
     this.dMap = dMap;
 
+    // Google Maps
+    var gLevel = Number($.cookie('gLevel'));
+    if(gLevel == 0){
+        gLevel = 14;
+    }
+    var cenLat = Number($.cookie('cenLat'));
+    var cenLng = Number($.cookie('cenLng'));
+    if(cenLng <123 || cenLng >133) cenLng = 127;
+    if(cenLat <32 || cenLat>39) cenLat = 37;
+
     var gMap = new google.maps.Map(document.getElementById('gmap'), {
-        zoom: 13,
-        center: {lat: 37.56613, lng: 126.97805} , 
+        zoom: gLevel,
+        center: {lat: cenLat, lng: cenLng} , 
         mapTypeId: google.maps.MapTypeId.ROADMAP,
         mapTypeControl: true,
         mapTypeControlOptions: {
@@ -90,7 +127,18 @@ function GPXMap() {
                 position: google.maps.ControlPosition.RIGHT_TOP
         }
     });
-    gMap.setZoom(14);
+    google.maps.event.addListener(gMap, "idle", function(){
+        var cenPoint = gMap.getCenter();
+        var cenLat = cenPoint.lat();
+        var cenLng = cenPoint.lng();
+
+        gLevel = gMap.getZoom();
+
+        $.cookie('cenLat', cenLat);
+        $.cookie('cenLng', cenLng);
+        $.cookie('gLevel', gLevel);
+    });
+
     this.gMap = gMap;
 
     this.changeMap("google");
@@ -338,7 +386,7 @@ GPXMap.prototype.changeMap = function(service){
     var gMap = this.gMap;
 
     var cenPoint;
-    var cenX = cenY = 0;
+    var cenLng = cenLat = 0;
 
     var dLevel, nLevel, gLevel;
 
@@ -357,8 +405,8 @@ GPXMap.prototype.changeMap = function(service){
 
     if (oldservice == 'daum') {
         cenPoint = dMap.getCenter();
-        cenY = cenPoint.getLat();
-        cenX = cenPoint.getLng();
+        cenLat = cenPoint.getLat();
+        cenLng = cenPoint.getLng();
 
         dLevel = dMap.getLevel();
         nLevel = 15 - dLevel;
@@ -368,8 +416,8 @@ GPXMap.prototype.changeMap = function(service){
         $('#daum').css("background-color", "LightGray");
     } else if(oldservice == 'naver') {
         cenPoint = nMap.getCenter();
-        cenY = cenPoint.getY();
-        cenX = cenPoint.getX();
+        cenLat = cenPoint.getY();
+        cenLng = cenPoint.getX();
 
         nLevel = nMap.getLevel();
         dLevel = 15 - nLevel;
@@ -379,8 +427,8 @@ GPXMap.prototype.changeMap = function(service){
         $('#naver').css("background-color", "LightGray");
     } else if(oldservice == 'google') {
         cenPoint = gMap.getCenter();
-        cenY = cenPoint.lat();
-        cenX = cenPoint.lng();
+        cenLat = cenPoint.lat();
+        cenLng = cenPoint.lng();
 
         gLevel = gMap.getZoom();
         nLevel = gLevel -5;
@@ -413,27 +461,27 @@ GPXMap.prototype.changeMap = function(service){
     if(gLevel > 19) gLevel = 19;
     if(gLevel < 1) gLevel = 1;
     
-    if(cenX <123 || cenX >133) cenX = 127;
-    if(cenY <32 || cenY>39) cenY = 37;
+    if(cenLng <123 || cenLng >133) cenLng = 127;
+    if(cenLat <32 || cenLat>39) cenLat = 37;
     
     if (service == "daum") {
         dMap.setLevel(dLevel);
 
-        dMap.setCenter(new daum.maps.LatLng(cenY, cenX));
+        dMap.setCenter(new daum.maps.LatLng(cenLat, cenLng));
 
         $('#dmap').show();
         $('#daum').css("background-color", "SkyBlue ");
     } else if (service == 'naver') {
         nMap.setLevel(nLevel);
 
-        nMap.setCenter(new nhn.api.map.LatLng(cenY, cenX));
+        nMap.setCenter(new nhn.api.map.LatLng(cenLat, cenLng));
 
         $('#nmap').show();
         $('#naver').css("background-color", "SkyBlue ");
     } else { //google
         gMap.setZoom(gLevel);
 
-        gMap.setCenter(new google.maps.LatLng(cenY, cenX));
+        gMap.setCenter(new google.maps.LatLng(cenLat, cenLng));
 
         $('#gmap').show();
         $('#google').css("background-color", "SkyBlue ");

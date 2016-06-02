@@ -18,8 +18,8 @@
         html, body {width: 100%; height: 100%}
         #gmap, #nmap, #dmap {width: 100%; height: 100%; position:fixed; top:0px; right:0px;}
         body {margin-top: 0px; margin-right: 0px; margin-left: 0px; margin-bottom: 0px}
-        #openclose {position:absolute; width:300px; height:30px; background-color:DarkSlateGray; opacity:0.9; text-align:center; z-index:5; color:white}
-        #controlbar {position:absolute; top:30px; width:300px; background-color:GhostWhite ; opacity:0.9; text-align:center; z-index:5}
+        #openclose {position:absolute; width:250px; height:30px; background-color:DarkSlateGray; opacity:0.9; text-align:center; z-index:5; color:white}
+        #controlbar {position:absolute; top:30px; width:250px; background-color:GhostWhite ; opacity:0.9; text-align:center; z-index:5}
         #userid, #pwd {width:100px}
         #daum, #naver {background-color:LightGray}
         #google {background-color:SkyBlue}
@@ -31,12 +31,13 @@
     <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
     <script src="//code.jquery.com/jquery-1.10.2.js"></script>
     <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+    <script src="jquery.cookie.js"></script> 
 
-<!-- for main l -->
+<!-- for main -->
     <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyD6Cw2m6ipHjPsd2HfHx5duc1M7tFls6ZY&language=ko"></script>
     <script src="http://apis.daum.net/maps/maps3.js?apikey=0bef3f16e12741da64be522723f027ab"></script>
     <script src="http://openapi.map.naver.com/openapi/v2/maps.js?clientId=Rq1jSZlHzMc72BAR72L4"></script>
-<!-- for local
+<!-- for local  
     <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyB-52v-NmfCHdSYdY-Z51OYlEqk8EySnLs&language=ko"></script>
     <script src="http://apis.daum.net/maps/maps3.js?apikey=ac43b4fa06e3aa177aeb45ae83af4a5b"></script>
     <script src="http://openapi.map.naver.com/openapi/v2/maps.js?clientId=BLZn7so3ptosnNfUW_sW"></script>
@@ -55,11 +56,11 @@
             /* 화면 제어 */					
             $("#openclose").click(function(){$("#controlbar").slideToggle();});
 
-            $("#google").click( function(){koMap.changeMap("google")});
-            $("#daum").click( function(){koMap.changeMap("daum")});
-            $("#naver").click( function(){koMap.changeMap("naver")});
+            $("#google").click( function(){koMap.changeMap("google");});
+            $("#daum").click( function(){koMap.changeMap("daum"); $("#controlbar").slideToggle();});
+            $("#naver").click( function(){koMap.changeMap("naver");});
 
-            $("#login").click( function(){readin(koMap, geocacheDB, "daum")});
+            $("#login").click( function(){readin(koMap, geocacheDB, "daum"); $("#controlbar").slideToggle();});
 
             var _file = document.getElementById('_file');
             var _idUser = document.getElementById('userid');
