@@ -5,7 +5,7 @@
 //			2016-04-19		version 0.1 
 // ---------------------------------
 
-var readin = function(koMap, geocacheDB, whichmap){
+var checkLogin = function(){
     var _idUser = $("#userid").val();
     var _pwUser = $("#pwd").val();
 
@@ -25,21 +25,24 @@ var readin = function(koMap, geocacheDB, whichmap){
                     $("#wdialog").dialog("close");
                 }, 1000);
             } else {
-                MemberID = response;
-                $("#wdialog").text('Wait a moment!').dialog( "open" );
-                window.setTimeout(function() {
-                    koMap.removeAllMarkers(whichmap); 
-                    geocacheDB.geocacheDB = [];
-                    geocacheDB.getAllFromDB(MemberID, koMap, whichmap);
-                    $("#wdialog").dialog("close");
-                }, 100);
+                memberID = response;
+                $("#loginmemberid").val(memberID);
+                $("#loginmemberid").change();
             }
         }
     });
+};
+
+var readin = function(koMap, geocacheDB, memberID, whichmap){
+    $("#wdialog").text('Wait a moment!').dialog( "open" );
+    window.setTimeout(function() {
+        koMap.removeAllMarkers(whichmap); 
+        geocacheDB.geocacheDB = [];
+        geocacheDB.getAllFromDB(memberID, koMap, whichmap);
+        $("#wdialog").dialog("close");
+    }, 100);
 }
 
-// panning to current position
-// not working now
 /*
 var currentLocation = function(koMap){
 
@@ -54,6 +57,7 @@ var currentLocation = function(koMap){
 			koMap.dMap.setCenter(new daum.maps.LatLng(cLat, cLon));
 		else
 			koMap.nMap.setCenter(new nhn.api.map.LatLng(cLat, cLon));
-    }); }
-}
+        }); 
+    }
+};
 */

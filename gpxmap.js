@@ -32,9 +32,24 @@ function GPXMap() {
     this.gInfoWindow = this.dInfoWindow = this.nInfoWindow = null;
     this.makeGHelpCallback = this.makeDHelpCallback = null;
 
+    // read previous map position
+    var gLevel = Number($.cookie('gLevel'));
+    if(gLevel == 0){
+        gLevel = 14;
+    }
+    var nLevel = gLevel -5;
+    var dLevel = 20 - gLevel;
+    
+    var cenLat = Number($.cookie('cenLat'));
+    var cenLng = Number($.cookie('cenLng'));
+    if(cenLng <123 || cenLng >133) cenLng = 127;
+    if(cenLat <32 || cenLat>39) cenLat = 37;
+
     // Naver Map
+    var cPoint = new nhn.api.map.LatLng(Number(cenLat), Number(cenLng))
     nMap = new nhn.api.map.Map(document.getElementById('nmap') ,{
-        zoom : 10,
+        zoom : Number(nLevel),
+        point : cPoint,
         mapMode : 0,
         activateTrafficMap : false,
         activateBicycleMap : false,
@@ -73,8 +88,8 @@ function GPXMap() {
 
     // Daum Map
     var dMap = new daum.maps.Map(document.getElementById('dmap'), {
-        center: new daum.maps.LatLng(37.56613, 126.97805),
-        level: 6,
+        center: new daum.maps.LatLng(Number(cenLat), Number(cenLng)),
+        level: Number(dLevel),
         mapTypeId: daum.maps.MapTypeId.ROADMAP
     });
 
@@ -99,14 +114,6 @@ function GPXMap() {
     this.dMap = dMap;
 
     // Google Maps
-    var gLevel = Number($.cookie('gLevel'));
-    if(gLevel == 0){
-        gLevel = 14;
-    }
-    var cenLat = Number($.cookie('cenLat'));
-    var cenLng = Number($.cookie('cenLng'));
-    if(cenLng <123 || cenLng >133) cenLng = 127;
-    if(cenLat <32 || cenLat>39) cenLat = 37;
 
     var gMap = new google.maps.Map(document.getElementById('gmap'), {
         zoom: gLevel,
