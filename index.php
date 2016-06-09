@@ -14,25 +14,16 @@
           It will use geocaching.com API, so that update informations automatically.">
     <meta charset="UTF-8">
     <meta name="author" content="Min Heo, blusky61@geocacing">
-    <style>
-        html, body {width: 100%; height: 100%}
-        #gmap, #nmap, #dmap {width: 100%; height: 100%; position:fixed; top:0px; right:0px;}
-        body {margin-top: 0px; margin-right: 0px; margin-left: 0px; margin-bottom: 0px}
-        #openclose {position:absolute; width:250px; height:30px; background-color:DarkSlateGray; opacity:0.9; text-align:center; z-index:5; color:white}
-        #controlbar {position:absolute; top:30px; width:250px; background-color:GhostWhite ; opacity:0.9; text-align:center; z-index:5}
-        #userid, #pwd {width:100px}
-        #daum, #naver {background-color:LightGray}
-        #google {background-color:SkyBlue}
-        .container {
-            margin: 0 auto;
-        }
-        #loginmemberid{ z-index:-5; display:none;}
-    </style>
 
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
-    <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <!--script src="//code.jquery.com/jquery-1.10.2.js"></script-->
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
     <script src="jquery.cookie.js"></script> 
+
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="myCSS.css">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
     
 <!-- for main 
     <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyD6Cw2m6ipHjPsd2HfHx5duc1M7tFls6ZY&language=ko"></script>
@@ -50,64 +41,54 @@
     <script src="geocache.js"></script>
     <script src="gpxmap.js"></script>
     <script src="callback_functions.js"></script>
+    <script src="navMenu.js"></script>
     <script>
         $(document).ready(function() {
             // var viewPortScale = 2 / window.devicePixelRatio; // scale for smartphone
             //$('#viewport').attr('content', 'user-scalable=no, initial-scale='+viewPortScale+', width=device-width');	
 
+            initMenu();
             var koMap = new GPXMap(); // initialize Maps
             var geocacheDB = new GeocacheDB();
 
             /* 화면 제어 */					
-            $("#openclose").click(function(){$("#controlbar").slideToggle();});
-
             $("#google").click( function(){koMap.changeMap("google")});
             $("#daum").click( function(){koMap.changeMap("daum")});
             $("#naver").click( function(){koMap.changeMap("naver")});
 
-/*
-            if ($(window).width() > 1000) {
-                $("#login").click( function(){readin(koMap, geocacheDB, "ALL")});
-            } else {
-                $("#login").click( function(){readin(koMap, geocacheDB, "daum")});
-            }
-*/
             $("#login").click( function(){
-                checkLogin(); // trigger "#loginmemberid"
+                $("#loginBar").hide();
+                checkLogin(); // trigger "#ajaxResult"
             });
             
-            $("#loginmemberid").change( function(){
-                memberID = $("#loginmemberid").val();
-                if (memberID !== "0") {
-                    if ($(window).width() > 1000) {
-                        readin(koMap, geocacheDB, memberID, "ALL");
-                    } else {
-                        readin(koMap, geocacheDB, memberID, "daum");
-                    };
-                };
-            });
+            $("#ajaxResult").change( function(){
+                var result = $("#ajaxResult").val();
+                if (result == "getAllDBComplete" ) { 
+                    koMap.attachHelpCallback(geocacheDB);
+                    koMap.createMarker(geocacheDB, whichmap);
+                    koMap.changeMap("daum");
+                    $("#wdialog").dialog("close");
+                } else { //checkLogin 
+                    $("#loginModal").modal("hide");
+                    var memberID = result;
+                    var whichmap = ($(window).width() > 1000) ? "ALL" : "daum";
 
-            var _file = document.getElementById('_file');
-            var _idUser = document.getElementById('userid');
-            $("#_submit").click( function(){upload(koMap, geocacheDB);});
-            $("#curPos").click( function(){currentLocation(koMap);});
+                    $("#wdialog").text('Wait a moment!').dialog( "open" );
+                    koMap.removeAllMarkers(whichmap); 
+                    geocacheDB.geocacheDB = [];
+                    geocacheDB.getAllFromDB(memberID);
+                }
+            });
+            
             $("#wdialog").dialog({autoOpen: false });
         });
     </script>
 </head>
 <body>
-    <div id="openclose">콘트롤 여닫기</div>
-    <div id="controlbar">
-        <p></p>
-        <form>
-            <fieldset><legend>지도 선택</legend>
-                <button type="button" id="google" >Google</button>
-                <button type="button" id="daum"   >Daum</button>
-                <button type="button" id="naver"  >Naver</button>
-            </fieldset>
-        </form>
-
-        <p></p>
+    <?php include "navMenu.html" ?>
+    <?php include "allForms.php" ?>
+    
+    <div id="loginBar">
         <form>
             <fieldset><legend>로그인 하기</legend>
                 지오캐싱 ID : <input type="text" id="userid" value="<?php if(isset($_COOKIE['userid'])) echo $_COOKIE['userid']; ?>" autofocus><br>
@@ -115,21 +96,12 @@
                 <input type="button" id="login" value="접속하기">
             </fieldset>
         </form>
-
-        <!-- p></p>
-        <form>
-            <fieldset>
-                <legend>현재위치 찾아가기</legend>
-                <button type="button" id="curPos" >현재위치로</button> 
-            </fieldset>
-        </form -->
-        <p></p>
     </div>
     <div id="dmap"></div>
     <div id="gmap"></div>
     <div id="nmap"></div>
     <div id="wdialog" title="Wait">Wait a moment...</div>
-    <input type="text" id="loginmemberid" value="0" >
+    <input type="text" id="ajaxResult" value="0" >
 </body>
 </html>
 

@@ -26,22 +26,13 @@ var checkLogin = function(){
                 }, 1000);
             } else {
                 memberID = response;
-                $("#loginmemberid").val(memberID);
-                $("#loginmemberid").change();
+                $("#ajaxResult").val(memberID);
+                $("#ajaxResult").change();
             }
         }
     });
 };
 
-var readin = function(koMap, geocacheDB, memberID, whichmap){
-    $("#wdialog").text('Wait a moment!').dialog( "open" );
-    window.setTimeout(function() {
-        koMap.removeAllMarkers(whichmap); 
-        geocacheDB.geocacheDB = [];
-        geocacheDB.getAllFromDB(memberID, koMap, whichmap);
-        $("#wdialog").dialog("close");
-    }, 100);
-}
 
 /*
 var currentLocation = function(koMap){

@@ -151,7 +151,8 @@ function GPXMap() {
     this.changeMap("google");
 };
 
-GPXMap.prototype.attachHelpCallback = function(geocacheDB) {
+GPXMap.prototype.attachHelpCallback = function(geocacheDB)
+{
     var gMap = this.gMap;
     var dMap = this.dMap;
     var nMap = this.nMap;
@@ -401,7 +402,7 @@ GPXMap.prototype.changeMap = function(service){
         $('#dmap').hide();
         $('#nmap').hide();
         $('#gmap').show();
-        $('#google').css("background-color", "SkyBlue ");
+        $('#google').addClass("active");
 
         return;
     }
@@ -420,7 +421,7 @@ GPXMap.prototype.changeMap = function(service){
         gLevel = 20 - dLevel;
 
         $('#dmap').hide();
-        $('#daum').css("background-color", "LightGray");
+        $('#daum').removeClass('active');
     } else if(oldservice == 'naver') {
         cenPoint = nMap.getCenter();
         cenLat = cenPoint.getY();
@@ -431,7 +432,7 @@ GPXMap.prototype.changeMap = function(service){
         gLevel = nLevel + 5;
         
         $('#nmap').hide();
-        $('#naver').css("background-color", "LightGray");
+        $('#naver').removeClass('active');
     } else if(oldservice == 'google') {
         cenPoint = gMap.getCenter();
         cenLat = cenPoint.lat();
@@ -441,7 +442,7 @@ GPXMap.prototype.changeMap = function(service){
         nLevel = gLevel -5;
         dLevel = 20 - gLevel;
         $('#gmap').hide();
-        $('#google').css("background-color", "LightGray");
+        $('#google').removeClass('active');
     }
 /*
  * dLevel = 20 - gLevel
@@ -477,20 +478,20 @@ GPXMap.prototype.changeMap = function(service){
         dMap.setCenter(new daum.maps.LatLng(cenLat, cenLng));
 
         $('#dmap').show();
-        $('#daum').css("background-color", "SkyBlue ");
+        $('#daum').addClass("active");
     } else if (service == 'naver') {
         nMap.setLevel(nLevel);
 
         nMap.setCenter(new nhn.api.map.LatLng(cenLat, cenLng));
 
         $('#nmap').show();
-        $('#naver').css("background-color", "SkyBlue ");
+        $('#naver').addClass("active");
     } else { //google
         gMap.setZoom(gLevel);
 
         gMap.setCenter(new google.maps.LatLng(cenLat, cenLng));
 
         $('#gmap').show();
-        $('#google').css("background-color", "SkyBlue ");
+        $('#google').addClass("active");
     } 
 };
