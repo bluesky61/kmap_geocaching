@@ -20,19 +20,19 @@ var checkLogin = function(){
         data: form_data,
         success: function (response) {
             if(response=="ERROR"){
-                $("#wdialog").text('No such id/pw').dialog("open");
+                $("#errorModal").modal("show");
                 window.setTimeout(function() {
-                    $("#wdialog").dialog("close");
-                }, 1000);
+                    $("#errorModal").modal("hide");
+                }, 3000);
             } else {
                 memberID = response;
                 $("#ajaxResult").val(memberID);
                 $("#ajaxResult").change();
+                $("#viewSettingMenu").removeAttr("disabled");
             }
         }
     });
 };
-
 
 /*
 var currentLocation = function(koMap){

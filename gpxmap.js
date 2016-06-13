@@ -24,13 +24,27 @@ function GPXMap() {
 
     this.gMap = this.dMap = this.nMap = null;
     this.cMap = 'old'; //(google, daum, naver)
-
+    this.terrainOn = true;
+    this.isFoundDisplay = true;
+    this.isPlacedDisplay = true;
+    
     this.gMarkers = [];
+    this.gPlacedMarkers = [];
+    this.gFoundMarkers = [];
     this.dMarkers = [];
+    this.dPlacedMarkers = [];
+    this.dFoundMarkers = [];
     this.nMarkers = [];
-    this.gMapListener = this.dMapListener = this.nMapListener = null;
-    this.gInfoWindow = this.dInfoWindow = this.nInfoWindow = null;
-    this.makeGHelpCallback = this.makeDHelpCallback = null;
+    this.nPlacedMarkers = [];
+    this.nFoundMarkers = [];
+    this.gMapListener = null;
+    this.dMapListener = null;
+    this.nMapListener = null;
+    this.gInfoWindow = null;
+    this.dInfoWindow = null;
+    this.nInfoWindow = null;
+    this.makeGHelpCallback = null;
+    this.makeDHelpCallback = null;
 
     // read previous map position
     var gLevel = Number($.cookie('gLevel'));
@@ -97,6 +111,8 @@ function GPXMap() {
     dMap.addControl(zoomControl, daum.maps.ControlPosition.RIGHT);
     var mapTypeControl = new daum.maps.MapTypeControl();
     dMap.addControl(mapTypeControl, daum.maps.ControlPosition.TOPRIGHT);
+
+    dMap.addOverlayMapTypeId(daum.maps.MapTypeId.TERRAIN);
 
     daum.maps.event.addListener(dMap, "idle", function(){
         var cenPoint = dMap.getCenter();
@@ -208,6 +224,10 @@ GPXMap.prototype.attachHelpCallback = function(geocacheDB)
         var n_pos = temp.search('\n');
         var gcNum = temp.substr(0, n_pos);
 
+        var pos = dmarker.getPosition();
+        var mlat = pos.getLat();
+        var mlng = pos.getLng();
+        
         if(dInfoWindow) dInfoWindow.close();
 
         var form_data = {
@@ -221,6 +241,8 @@ GPXMap.prototype.attachHelpCallback = function(geocacheDB)
             cache: false,
             success: function(data) {
                 html = data;
+                html += '<div style="text-align:center;padding:5px;"><a href="http://map.daum.net/link/to/' + gcNum + ',' + mlat + ',' + mlng + '" style="color:blue" target="_blank">길찾기</a><div>';
+                /* **여기에 로드뷰와 길찾기 추가 ********************* */
                 dInfoWindow = new daum.maps.InfoWindow({
                         content: html
                 });
@@ -304,6 +326,9 @@ GPXMap.prototype.createMarker = function(geocacheDB, whichmap) {
     var gDB = geocacheDB.geocacheDB;
     var length = geocacheDB.geocacheDB.length;
 
+    var isFoundDisplay = Number($.cookie('foundDisplay'));
+    var isPlacedDisplay = Number($.cookie('placedDisplay'));
+
     for(var i=0; i < length; i++){
         var gcNumber = gDB[i][0];
         var gcTitle = gDB[i][1];
@@ -324,9 +349,19 @@ GPXMap.prototype.createMarker = function(geocacheDB, whichmap) {
             image: dicon
         });
         dmarker.setTitle(gcNumber + '\n' + gcTitle);
-        dmarker.setMap(dMap);
 
-        this.dMarkers.push(dmarker);
+        if(gcIcon == 'Placed') {
+            if(whichmap!= "daum") this.dPlacedMarkers.push(dmarker);
+            if(isPlacedDisplay)
+                dmarker.setMap(dMap);
+        } else if(gcIcon =='Found') {
+            if(whichmap!= "daum") this.dFoundMarkers.push(dmarker);
+            if(isFoundDisplay)
+                dmarker.setMap(dMap);
+        } else {
+            this.dMarkers.push(dmarker);
+                dmarker.setMap(dMap);
+        }
 
         daum.maps.event.addListener(dmarker, "click", this.makeDHelpCallback(dmarker));
 
@@ -338,10 +373,20 @@ GPXMap.prototype.createMarker = function(geocacheDB, whichmap) {
             position: new google.maps.LatLng(lat,lon),
             icon: {url:cacheImage[gcIcon]},
             title : gcNumber + '\n' + gcTitle,
-            map: gMap
         });
 
-        this.gMarkers.push(gmarker);
+        if(gcIcon == 'Placed') {
+            this.gPlacedMarkers.push(gmarker);
+            if(isPlacedDisplay) 
+                gmarker.setMap(gMap);
+        } else if(gcIcon =='Found') {
+            this.gFoundMarkers.push(gmarker);
+            if(isFoundDisplay) 
+                gmarker.setMap(gMap);
+        } else {
+            this.gMarkers.push(gmarker);
+                gmarker.setMap(gMap);
+        }
 
         google.maps.event.addListener(gmarker, "click", this.makeGHelpCallback(gmarker));
 
@@ -353,23 +398,48 @@ GPXMap.prototype.createMarker = function(geocacheDB, whichmap) {
             point : nposition,
             title : gcNumber + '\n' + gcTitle
         });
-        nMap.addOverlay(nmarker); 
-        nmarker.setVisible(true);
 
-        this.nMarkers.push(nmarker);
+        if(gcIcon == 'Placed') {
+            this.nPlacedMarkers.push(nmarker);
+            if(isPlacedDisplay) 
+                nMap.addOverlay(nmarker); 
+        } else if(gcIcon =='Found') {
+            this.nFoundMarkers.push(nmarker);
+            if(isFoundDisplay) 
+                nMap.addOverlay(nmarker); 
+        } else {
+            this.nMarkers.push(nmarker);
+            nMap.addOverlay(nmarker); 
+        }
+
+        // nmarker.setVisible(true);
     }
 };
 
 GPXMap.prototype.removeAllMarkers = function(whichmap){
     var gmarkers = this.gMarkers;
+    var gfmarkers = this.gFoundMarkers;
+    var gpmarkers = this.gPlacedMarkers;
     var dmarkers = this.dMarkers;
+    var dfmarkers = this.dFoundMarkers;
+    var dpmarkers = this.dPlacedMarkers;
     var nmarkers = this.nMarkers;
+    var nfmarkers = this.nFoundMarkers;
+    var npmarkers = this.nPlacedMarkers;
 
 // daum map
     for (var i = 0; i < dmarkers.length; i++) {
         dmarkers[i].setMap(null);
     }
     dmarkers = [];
+    for (var i = 0; i < dfmarkers.length; i++) {
+        dfmarkers[i].setMap(null);
+    }
+    dfmarkers = [];
+    for (var i = 0; i < dpmarkers.length; i++) {
+        dpmarkers[i].setMap(null);
+    }
+    dpmarkers = [];
 
     if(whichmap == 'daum')
         return;
@@ -379,10 +449,137 @@ GPXMap.prototype.removeAllMarkers = function(whichmap){
         gmarkers[i].setMap(null);
     }
     gmarkers = [];
+    for (var i = 0; i < gfmarkers.length; i++) {
+        gfmarkers[i].setMap(null);
+    }
+    gfmarkers = [];
+    for (var i = 0; i < gpmarkers.length; i++) {
+        gpmarkers[i].setMap(null);
+    }
+    gpmarkers = [];
 
 // naver map
     this.nMap.clearOverlay();
     nmarkers= [];
+    nfmarkers= [];
+    npmarkers= [];
+}
+
+GPXMap.prototype.hidePlacedMarkers = function(whichmap) {
+    var gmarkers = this.gPlacedMarkers;
+    var dmarkers = this.dPlacedMarkers;
+    var nmarkers = this.nPlacedMarkers;
+    var dmap = this.dMap;
+    var gmap = this.gMap;
+    var nmap = this.nMap;
+    
+    // daum map
+    for (var i = 0; i < dmarkers.length; i++) {
+        dmarkers[i].setMap(null);
+    }
+
+    if(whichmap == 'daum')
+        return;
+    
+    // googlemaps
+    for (var i = 0; i < gmarkers.length; i++) {
+        gmarkers[i].setMap(null);
+    }
+
+    // naver map
+    for (var i = 0; i < nmarkers.length; i++) {
+        nmap.removeOverlay(nmarkers[i]); 
+    }
+
+}
+
+GPXMap.prototype.hideFoundMarkers = function(whichmap) {
+    var gmarkers = this.gFoundMarkers;
+    var dmarkers = this.dFoundMarkers;
+    var nmarkers = this.nFoundMarkers;
+    var dmap = this.dMap;
+    var gmap = this.gMap;
+    var nmap = this.nMap;
+    
+    // daum map
+    for (var i = 0; i < dmarkers.length; i++) {
+        dmarkers[i].setMap(null);
+    }
+
+    if(whichmap == 'daum')
+        return;
+    
+    // googlemaps
+    for (var i = 0; i < gmarkers.length; i++) {
+        gmarkers[i].setMap(null);
+    }
+
+    // naver map
+    for (var i = 0; i < nmarkers.length; i++) {
+        nmap.removeOverlay(nmarkers[i]); 
+    }
+}
+
+GPXMap.prototype.showPlacedMarkers = function(whichmap) {
+    var gmarkers = this.gPlacedMarkers;
+    var dmarkers = this.dPlacedMarkers;
+    var nmarkers = this.nPlacedMarkers;
+    var dmap = this.dMap;
+    var gmap = this.gMap;
+    var nmap = this.nMap;
+    // daum map
+    for (var i = 0; i < dmarkers.length; i++) {
+        dmarkers[i].setMap(dmap);
+    }
+
+    if(whichmap == 'daum')
+        return;
+    
+    // googlemaps
+    for (var i = 0; i < gmarkers.length; i++) {
+        gmarkers[i].setMap(gmap);
+    }
+
+    // naver map
+    for (var i = 0; i < nmarkers.length; i++) {
+        nmap.addOverlay(nmarkers[i]); 
+    }
+}
+
+GPXMap.prototype.showFoundMarkers = function(whichmap) {
+    var gmarkers = this.gFoundMarkers;
+    var dmarkers = this.dFoundMarkers;
+    var nmarkers = this.nFoundMarkers;
+    var dmap = this.dMap;
+    var gmap = this.gMap;
+    var nmap = this.nMap;
+    // daum map
+    for (var i = 0; i < dmarkers.length; i++) {
+        dmarkers[i].setMap(dmap);
+    }
+
+    if(whichmap == 'daum')
+        return;
+    
+    // googlemaps
+    for (var i = 0; i < gmarkers.length; i++) {
+        gmarkers[i].setMap(gmap);
+    }
+
+    // naver map
+    for (var i = 0; i < nmarkers.length; i++) {
+        nmap.addOverlay(nmarkers[i]); 
+    }
+}
+
+GPXMap.prototype.terrainOnOff = function(){
+    if (this.terrainOn) {
+        this.dMap.removeOverlayMapTypeId(daum.maps.MapTypeId.TERRAIN);
+        this.terrainOn = false;
+    } else {
+        this.dMap.addOverlayMapTypeId(daum.maps.MapTypeId.TERRAIN);
+        this.terrainOn = true;
+    }
 }
 
 GPXMap.prototype.changeMap = function(service){

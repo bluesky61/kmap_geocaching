@@ -59,7 +59,7 @@
                 <p>지도에 표시되는 지오캐시는 최신 데이터가 아닙니다. 개발자가 주기적으로
                     업로드해 주고 있습니다.</p>
                 <p>기타 오류를 신고할 게 있으시거나 요청할 게 있으시면 
-                    <a href="https://www.geocaching.com/profile/?u=bluesky61">개발자의 회원정보</a>에
+                    <a href="https://www.geocaching.com/profile/?u=bluesky61" target='_blank'>개발자의 회원정보</a>에
                     들어가셔서 메시지센터로 연락을 주시기 바랍니다.</p>
             </div>
             <div class="modal-footer">
@@ -70,17 +70,61 @@
     </div>
 </div>
 
-<!-- Wait
-<div class="modal fade" id="wdialog" role="dialog">
-    <div class="modal-dialog modal-md">
-        <!-- Modal content
+<!-- ViewSetting -->
+<div class="modal fade" id="viewSettingModal" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <!-- Modal content -->
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Wait</h4>
+                <!-- button type="button" class="close" data-dismiss="modal">&times;</button -->
+                <h4 class="modal-title">View Setting</h4>
             </div>
             <div class="modal-body">
+                <input type="checkbox" id="viewFound"  name="found"  value="Found">&nbsp;찾은 캐시<br>
+                <input type="checkbox" id="viewPlaced" name="placed" value="Placed">&nbsp;설치한 캐시<br><br>
+            </div>
+            <div class="modal-footer">
+                <input type="button" id="viewSettingButton" class="btn btn-default" data-dismiss="modal" value="실행"></input>
+            </div>
+         </div>
+    </div>
+</div>
+
+<!-- Wait -->
+<div class="modal fade" id="waitModal" role="dialog" width="100px">
+    <div class="modal-dialog modal-sm" width="100px">
+        <!-- Modal content -->
+        <div class="modal-content">
+            <div class="modal-header" width="100px">
+                <!-- button type="button" class="close" data-dismiss="modal">&times;</button -->
+                <h4 class="modal-title">Wait</h4>
+            </div>
+            <div class="modal-body" width="100px">
                 <p>잠시 기다려 주세요. 처리중입니다.</p>
+            </div>
+            <!-- div class="progress">
+                <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="0"
+                aria-valuemin="0" aria-valuemax="100" style="width:0%">
+                </div>
+            </div -->
+            <!--div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div-->
+         </div>
+
+    </div>
+</div>
+<!-- Error -->
+<div class="modal fade" id="errorModal" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <!-- Modal content -->
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:#ff6666;">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title" style="background-color:#ff6666;">Error!</h4>
+            </div>
+            <div class="modal-body">
+                <p>오류가 발생했습니다!</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -89,4 +133,3 @@
 
     </div>
 </div>
- -->

@@ -68,7 +68,7 @@ try {
         $left_with = 250;
     }
         
-    $html = "<div style='font-size: 12px;background-color:#FFFFFF;width:" . $tot_width. "px'> <table border='0'><tr><td colspan='2'>"
+    $html = "<div style='padding:5px;font-size:12px;background-color:#FFFFFF;width:" . $tot_width. "px'> <table border='0'><tr><td colspan='2'>"
 	. "<img src=" . $cacheImage[$row['type']] . ">"
 	. "<a href=" . $row['url'] . " target='_blank'><span><b>" . $row['title'] . "</b></a></span><span style='float:right'>" . $row ['gcnumber'] . "</span><br /></td></tr>"
 	. "<tr><td colspan='2'>Created by : " . $row['placedby'] . "</td></tr>"

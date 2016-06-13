@@ -16,9 +16,7 @@
     <meta name="author" content="Min Heo, blusky61@geocacing">
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
-    <!--script src="//code.jquery.com/jquery-1.10.2.js"></script-->
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-    <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
     <script src="jquery.cookie.js"></script> 
 
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
@@ -33,7 +31,7 @@
     <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyD6Cw2m6ipHjPsd2HfHx5duc1M7tFls6ZY&language=ko"></script>
     <script src="http://apis.daum.net/maps/maps3.js?apikey=0bef3f16e12741da64be522723f027ab"></script>
     <script src="http://openapi.map.naver.com/openapi/v2/maps.js?clientId=Qtus_QPl_Ff_XimMtIcZ"></script>
-<!-- for local --> 
+<!-- for local  -->
     <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyB-52v-NmfCHdSYdY-Z51OYlEqk8EySnLs&language=ko"></script>
     <script src="http://apis.daum.net/maps/maps3.js?apikey=ac43b4fa06e3aa177aeb45ae83af4a5b"></script>
     <script src="http://openapi.map.naver.com/openapi/v2/maps.js?clientId=tKwiqUIbN2oMs10svQyD"></script>
@@ -47,40 +45,37 @@
             // var viewPortScale = 2 / window.devicePixelRatio; // scale for smartphone
             //$('#viewport').attr('content', 'user-scalable=no, initial-scale='+viewPortScale+', width=device-width');	
 
-            initMenu();
             var koMap = new GPXMap(); // initialize Maps
             var geocacheDB = new GeocacheDB();
 
-            /* 화면 제어 */					
+            initMenu(koMap);
+
+        /* 화면 제어 */					
             $("#google").click( function(){koMap.changeMap("google")});
             $("#daum").click( function(){koMap.changeMap("daum")});
             $("#naver").click( function(){koMap.changeMap("naver")});
 
-            $("#login").click( function(){
-                $("#loginBar").hide();
-                checkLogin(); // trigger "#ajaxResult"
-            });
-            
             $("#ajaxResult").change( function(){
                 var result = $("#ajaxResult").val();
                 if (result == "getAllDBComplete" ) { 
+                    var whichmap = ($(window).width() > 1000) ? "ALL" : "daum";
+
                     koMap.attachHelpCallback(geocacheDB);
                     koMap.createMarker(geocacheDB, whichmap);
                     koMap.changeMap("daum");
-                    $("#wdialog").dialog("close");
+//                    $("#wdialog").dialog("close");
+                    $("#waitModal").modal("hide");
                 } else { //checkLogin 
-                    $("#loginModal").modal("hide");
                     var memberID = result;
                     var whichmap = ($(window).width() > 1000) ? "ALL" : "daum";
 
-                    $("#wdialog").text('Wait a moment!').dialog( "open" );
+//                    $("#wdialog").text('Wait a moment!').dialog( "open" );
+                    $("#waitModal").modal("show");
                     koMap.removeAllMarkers(whichmap); 
                     geocacheDB.geocacheDB = [];
                     geocacheDB.getAllFromDB(memberID);
                 }
             });
-            
-            $("#wdialog").dialog({autoOpen: false });
         });
     </script>
 </head>
@@ -100,7 +95,6 @@
     <div id="dmap"></div>
     <div id="gmap"></div>
     <div id="nmap"></div>
-    <div id="wdialog" title="Wait">Wait a moment...</div>
     <input type="text" id="ajaxResult" value="0" >
 </body>
 </html>
