@@ -8,6 +8,7 @@
 function GeocacheDB(){
     this.geocacheDB = new Array();
     this.GPXOwner = null;
+    this.length = 0;
     this.minlat = 0;
     this.maxlat = 0;
     this.minlon = 0;
@@ -40,4 +41,13 @@ GeocacheDB.prototype.getAllFromDB = function(Memberid) {
         }
     });
 }
-
+GeocacheDB.prototype.getGeocache = function(GCNumber){
+    gDB = this.geocacheDB;
+    length = gDB.length;
+    
+    for(var i=0; i<length; i++){
+        if(gDB[i][0] == GCNumber)
+            break;
+    }
+    return {gcnumber:gDB[i][0], title:gDB[i][1], lat:gDB[i][2], lon:gDB[i][3], icon1:gDB[i][4]};
+}

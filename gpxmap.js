@@ -45,7 +45,13 @@ function GPXMap() {
     this.nInfoWindow = null;
     this.makeGHelpCallback = null;
     this.makeDHelpCallback = null;
+    this.roadview = this.roadviewClient = null;
 
+    // Road view
+    var roadviewContainer = document.getElementById('roadview'); //로드뷰를 표시할 div
+    this.roadview = new daum.maps.Roadview(roadviewContainer); //로드뷰 객체
+    this.roadviewClient = new daum.maps.RoadviewClient(); //좌표로부터 로드뷰 파노ID를 가져올 로드뷰 helper객체
+    
     // read previous map position
     var gLevel = Number($.cookie('gLevel'));
     if(gLevel == 0){
@@ -128,7 +134,7 @@ function GPXMap() {
     });
 
     this.dMap = dMap;
-
+    
     // Google Maps
 
     var gMap = new google.maps.Map(document.getElementById('gmap'), {
@@ -169,6 +175,7 @@ function GPXMap() {
 
 GPXMap.prototype.attachHelpCallback = function(geocacheDB)
 {
+    var koMap = this;
     var gMap = this.gMap;
     var dMap = this.dMap;
     var nMap = this.nMap;
@@ -241,8 +248,8 @@ GPXMap.prototype.attachHelpCallback = function(geocacheDB)
             cache: false,
             success: function(data) {
                 html = data;
-                html += '<div style="text-align:center;padding:5px;"><a href="http://map.daum.net/link/to/' + gcNum + ',' + mlat + ',' + mlng + '" style="color:blue" target="_blank">길찾기</a><div>';
-                /* **여기에 로드뷰와 길찾기 추가 ********************* */
+                html +='<div style="text-align:center;padding:5px;color:blue;"><a href="javascript:displayRoadview(\'' + gcNum + '\')">로드뷰</a>';
+                html += '&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://map.daum.net/link/to/' + gcNum + ',' + mlat + ',' + mlng + '" style="color:blue;" target="_blank">길찾기</a><div>';
                 dInfoWindow = new daum.maps.InfoWindow({
                         content: html
                 });
@@ -581,7 +588,34 @@ GPXMap.prototype.terrainOnOff = function(){
         this.terrainOn = true;
     }
 }
+GPXMap.prototype.displayRoadview = function(gDB, gcNumber){
+    geocache = gDB.getGeocache(gcNumber);
+        // {gcnumber:gDB[i][0], title:gDB[i][1], lat:gDB[i][2], lon:gDB[i][3], icon1:gDB[i][4]}
+        // this.roadview = new daum.maps.Roadview(roadviewContainer); //로드뷰 객체
+        // this.roadviewClient = new daum.maps.RoadviewClient(); //좌표로부터 로드뷰 파노ID를 가져올 로드뷰 helper객체
 
+    var Lat = geocache.lat;
+    var Lng = geocache.lon;
+    var roadview = this.roadview;
+    var roadviewClient = this.roadviewClient;
+        
+    var position = new daum.maps.LatLng(Lat, Lng);
+
+// 특정 위치의 좌표와 가까운 로드뷰의 panoId를 추출하여 로드뷰를 띄운다.
+    roadviewClient.getNearestPanoId(position, 50, function(panoId) {
+        roadview.setPanoId(panoId, position); //panoId와 중심좌표를 통해 로드뷰 실행
+        // rvResetValue.panoId = panoId;
+    });
+    var rMarker = new daum.maps.Marker({
+        position: position, // 지도의 중심좌표에 올립니다.
+        map: roadview // 생성하면서 지도에 올립니다.
+    });
+    var rLabel = new daum.maps.InfoWindow({
+        position: position, // 지도의 중심좌표에 올립니다.
+        content: gcNumber +"<br>"+ geocache.title // 인포윈도우 내부에 들어갈 컨텐츠 입니다.
+    });
+    rLabel.open(roadview, rMarker);
+}
 GPXMap.prototype.changeMap = function(service){
 
     var oldservice = this.cMap;

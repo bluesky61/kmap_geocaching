@@ -20,6 +20,8 @@ nav.fix_menu {
 #currentStatus{ z-index:-5; display:none;}
 html, body {width: 100%; height: 100%}
 #gmap, #nmap, #dmap {width: 100%; height: 100%; position:fixed; top:0px; right:0px;}
+#roadview {width: 100%; height: 100%; position:fixed; top:0px; right:0px;z-index:5;display:none;}
+#roadviewClose {position:fixed;right:30px;top:30px;z-index:6;display:none;}
 body {margin-top: 0px; margin-right: 0px; margin-left: 0px; margin-bottom: 0px}
 #loginBar {position:absolute; top:40px; left:50px; width:250px; background-color:GhostWhite ; opacity:0.9; text-align:center; z-index:5;display:none;}
 #userid, #pwd {width:100px}

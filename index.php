@@ -63,19 +63,27 @@
                     koMap.attachHelpCallback(geocacheDB);
                     koMap.createMarker(geocacheDB, whichmap);
                     koMap.changeMap("daum");
-//                    $("#wdialog").dialog("close");
                     $("#waitModal").modal("hide");
                 } else { //checkLogin 
                     var memberID = result;
                     var whichmap = ($(window).width() > 1000) ? "ALL" : "daum";
 
-//                    $("#wdialog").text('Wait a moment!').dialog( "open" );
                     $("#waitModal").modal("show");
                     koMap.removeAllMarkers(whichmap); 
                     geocacheDB.geocacheDB = [];
                     geocacheDB.getAllFromDB(memberID);
                 }
             });
+            
+            displayRoadview = function(GCNum) { // global variable
+                $("#roadview").css("display","block");
+                $("#roadviewClose").css("display","block");
+                koMap.displayRoadview(geocacheDB, GCNum);
+            };
+            $("#roadviewClose").click( function(){
+                $("#roadview").css("display","none");
+                $("#roadviewClose").css("display","none");
+            })
         });
     </script>
 </head>
@@ -95,6 +103,8 @@
     <div id="dmap"></div>
     <div id="gmap"></div>
     <div id="nmap"></div>
+    <div id="roadview"></div>
+    <button type="button" class="btn btn-danger btn-lg" id="roadviewClose">&times;</button>
     <input type="text" id="ajaxResult" value="0" >
 </body>
 </html>
