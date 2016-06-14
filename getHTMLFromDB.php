@@ -65,14 +65,14 @@ try {
     $left_width = 150;
     if (strlen($row['title']) > 40 || strlen($row['placedby'])>40){
         $tot_width = 400;
-        $left_with = 250;
+        $left_width = 195;
     }
         
     $html = "<div style='padding:5px;font-size:12px;background-color:#FFFFFF;width:" . $tot_width. "px'> <table border='0'><tr><td colspan='2'>"
 	. "<img src=" . $cacheImage[$row['type']] . ">"
 	. "<a href=" . $row['url'] . " target='_blank'><span><b>" . $row['title'] . "</b></a></span><span style='float:right'>" . $row ['gcnumber'] . "</span><br /></td></tr>"
 	. "<tr><td colspan='2'>Created by : " . $row['placedby'] . "</td></tr>"
-	. "<tr><td width='$left_width'>Difficulty : <img src=" . $diffImage[$row['diff']] . "></td><td>Terrain : <img src=" . $diffImage[$row['terr']] . "></td></tr>"
+	. "<tr><td width='$left_width'>Difficulty : <img src=" . $diffImage[$row['diff']] . "></td><td width='$left_width'>Terrain : <img src=" . $diffImage[$row['terr']] . "></td></tr>"
 	. "<tr><td>Size : <img src=" . $sizeImage[$row['size']] . "></td><td width='160'>Hidden : " . $row['hidden'] . "</td></tr></table></div>";
 
  exit($html);

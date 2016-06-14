@@ -603,8 +603,12 @@ GPXMap.prototype.displayRoadview = function(gDB, gcNumber){
 
 // 특정 위치의 좌표와 가까운 로드뷰의 panoId를 추출하여 로드뷰를 띄운다.
     roadviewClient.getNearestPanoId(position, 50, function(panoId) {
-        roadview.setPanoId(panoId, position); //panoId와 중심좌표를 통해 로드뷰 실행
-        // rvResetValue.panoId = panoId;
+        if (panoId === null) { //로드뷰가 없음
+            $("#roadview").css("display","none");
+            $("#roadviewClose").css("display","none");
+        } else {
+            roadview.setPanoId(panoId, position); //panoId와 중심좌표를 통해 로드뷰 실행
+        }
     });
     var rMarker = new daum.maps.Marker({
         position: position, // 지도의 중심좌표에 올립니다.
@@ -612,7 +616,7 @@ GPXMap.prototype.displayRoadview = function(gDB, gcNumber){
     });
     var rLabel = new daum.maps.InfoWindow({
         position: position, // 지도의 중심좌표에 올립니다.
-        content: gcNumber +"<br>"+ geocache.title // 인포윈도우 내부에 들어갈 컨텐츠 입니다.
+        content: "<div>" + gcNumber +"<br>"+ geocache.title + "</div>" // 인포윈도우 내부에 들어갈 컨텐츠 입니다.
     });
     rLabel.open(roadview, rMarker);
 }
